@@ -1,0 +1,4 @@
+competency	points	function	signature	checkr	task
+vector_basics	3	create_sequence_from_10_to_20	function()	vector_basics/create_sequence_from_10_to_20.R	vector_basics/create_sequence_from_10_to_20.txt
+vector_basics	3	create_sequence_from_20_to_30	function()	vector_basics/create_sequence_from_20_to_30.R	vector_basics/create_sequence_from_20_to_30.txt
+vector_basics	3	create_sequence_from_40_to_80	function()	vector_basics/create_sequence_from_40_to_80.R	vector_basics/create_sequence_from_40_to_80.txt

@@ -1,0 +1,2 @@
+Create and return a sequence of whole numbers from 40 to 80.
+Make sure to use 'seq' and a step size of 2.
