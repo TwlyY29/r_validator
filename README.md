@@ -128,4 +128,19 @@ sync the `task_1` folder with your webserver and then
 make solutions
 ```
 
+### Using this in Windows
+You can also use this system with Windows. Therefore, you just need a way to execute a `Makefile` and `python3`.
 
+I tried using [chocolatery](https://chocolatey.org/) which works fairly well. To get this running, follow these steps:
+
+1. Open PowerShell with Administrator privileges<br/>
+   Open the Start Menu, search for PowerShell, and right-click the icon selecting "Open with Admin..."
+2. Right-click the title bar of the PowerShell window and select "Properties" or "Eigenschaften". Then, activate "Copy/Paste using CTRL+SHIFT+C/V" to be able to paste a command into the shell.
+3. Visit [https://chocolatey.org/install#individual](https://chocolatey.org/install#individual) and find the PowerShell command. Copy it.
+4. Paste the command to the PowerShell (using CTRL+SHIFT+V) and execute it.
+5. Run `choco install make` in the PowerShell
+6. Run `python3` in the PowerShell.<br/>
+   If this opens the Windows App Store, install Python 3 from there. Otherwise hit CTRL+D to exit the Python shell
+7. Run `pip3 install plac` still in the PowerShell
+8. Open the [`Makefile`](Makefile) in [a good text editor](https://geany.org/) and ajdust the paths: Replace all '/' by '\'. **AND** remove the target that creates the `$(CONFFILE)` as well as the `$(CONFFILE)` dependency behind `packages`. You need to create the file yourself which is explained in the next step.
+9. Open the [validator.config.env](tools/validator.config.env) in [a good text editor](https://geany.org/) and ajdust the paths: Replace all '/' by '\'. **AND** replace `${BASEDIR}` by the directory you saved this repository on your local hard drive. Save the resulting file as `tools/validator.config`
