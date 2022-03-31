@@ -1,9 +1,9 @@
-n_cases <- 3
+n_cases <- 2
 test_cases <- c(
-  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80"
+  "test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80"
 )
 cases_function_names <- c(
-  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80"
+  "create_sequence_from_20_to_30","create_sequence_from_40_to_80"
 )
 n_tests_running <- 0
 
@@ -82,19 +82,9 @@ if (inherits(res, "try-error")) {
   special_print("@ERROR@Error while loading your solution")
 }else{
   # add required test functions to sandbox environment
-  sandbox$test.create_sequence_from_10_to_20 <- function(){
-    sink(file="/dev/null")
-      res <- create_sequence_from_10_to_20
-    sink()
-    checkEquals(length(res), 11, "length of list")
-    checkTrue(res[2]-res[1] == 1, "step size")
-    checkEqualsNumeric(res, 10:20, "values")
-  }
-  environment(sandbox$test.create_sequence_from_10_to_20) <- sandbox
-
   sandbox$test.create_sequence_from_20_to_30 <- function(){
     sink(file="/dev/null")
-      res <- create_sequence_from_20_to_30
+      res <- create_sequence_from_20_to_30()
     sink()
     checkEquals(length(res), 11, "length of list")
     checkTrue(res[2]-res[1] == 1, "step size")
@@ -104,7 +94,7 @@ if (inherits(res, "try-error")) {
 
   sandbox$test.create_sequence_from_40_to_80 <- function(){
     sink(file="/dev/null")
-      res <- create_sequence_from_40_to_80
+      res <- create_sequence_from_40_to_80()
     sink()
     checkTrue(res[2]-res[1] == 2, "step size")
     checkEqualsNumeric(res, seq(40,80,2), "values")

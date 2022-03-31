@@ -1,7 +1,7 @@
 ################################
 # DO NOT MODIFY THIS BLOCK!
 # id: 234567
-# created: 2022-03-30
+# created: 2022-03-31
 # achievable score: 6
 # DO NOT MODIFY THIS BLOCK! 
 ################################
@@ -9,22 +9,21 @@
 
 # Task 1:
 # 3 Points
-# Create and return a sequence of equal numbers from 30 to 35.
-# Make sure to use 'seq'.
+# Create and return a sequence of whole numbers from 40 to 80.
+# Make sure to use 'seq' and a step size of 2.
 #
 # Do NOT change the following line
-create_vector_from_30_to_35_seq <- function(){
-  seq(30,35,2)
+create_sequence_from_40_to_80 <- function(){
+  seq(40,80,2)
 }
 
 # Task 2:
 # 3 Points
-# Create and return a sequence of numbers from 20 to 30.
-# Make sure to only whole numbers.
+# Create and return a sequence of whole numbers from 10 to 20.
 #
 # Do NOT change the following line
-create_vector_from_20_to_30_onestep <- function(){
-  c(20:30)
+create_sequence_from_10_to_20 <- function(){
+  c(10:20)
 }
 
 

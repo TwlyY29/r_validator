@@ -1,4 +1,4 @@
-BASEDIR=/home/mirco/gits/r_validator
+BASEDIR=$(shell pwd)
 
 STUDENTS_FILE=$(BASEDIR)/students.tsv
 TASKS_FILE=$(BASEDIR)/task_1.tsv
@@ -19,6 +19,9 @@ packages: $(CONFFILE)
 
 solutions: packages
 	cd $(TASKDIR) && python3 $(TOOLSDIR)/make_solutions.py $(CONFFILE)
+
+tests:	solutions
+	cd $(TASKDIR) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)
 
 .INTERMEDIATE: $(CONFFILE)
 $(CONFFILE): $(CONFFILE_ENV)

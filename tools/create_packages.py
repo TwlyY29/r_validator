@@ -77,7 +77,7 @@ def create_test_file(indices, taskdb, solfile, outdir, config):
   for i in indices:
     f = taskdb[i]['function']
     ftest = f'test.{f}'
-    src = load_source_file( ftest, f, taskdb[i]['checkr'], config)
+    src = load_source_file( ftest, f+'()', taskdb[i]['checkr'], config)
     test_sources += prepare_sandboxed_inline_test(ftest, src) + '\n'
     test_functions.append( ftest )
     r_functions.append( f'{f}' )

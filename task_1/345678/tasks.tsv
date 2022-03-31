@@ -1,4 +1,3 @@
 competency	points	function	solution_file
-vector_basics	3	create_sequence_from_10_to_20	vector_basics/create_sequence_from_10_to_20.R
 vector_basics	3	create_sequence_from_20_to_30	vector_basics/create_sequence_from_20_to_30.R
 vector_basics	3	create_sequence_from_40_to_80	vector_basics/create_sequence_from_40_to_80.R
