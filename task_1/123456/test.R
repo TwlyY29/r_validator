@@ -1,9 +1,9 @@
-n_cases <- 2
+n_cases <- 5
 test_cases <- c(
-  "test.create_sequence_from_20_to_30","test.create_sequence_from_10_to_20"
+  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus"
 )
 cases_function_names <- c(
-  "create_sequence_from_20_to_30","create_sequence_from_10_to_20"
+  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus"
 )
 n_tests_running <- 0
 
@@ -61,13 +61,24 @@ checkError <- function(expr, what, silent=TRUE){
     special_print(paste0("@FAIL@",what))
   }
 }
-checkSourceContains <- function(expr, what, f=solution, fixed=TRUE){
+checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, negate=FALSE){
   n_tests_running <<- n_tests_running+1
-  x <- grep(expr, readLines(f), fixed=fixed)
+  if(!is.null(fname)){# check only searches body of function
+    # read in the source file
+    body <- paste(readLines(f),collapse='') 
+    # remove everything up to the start of the function
+    body <- sub(paste0("^.*",fname,"[^{]*{",collapse=''),"",body, perl=T)
+    # remove everything starting from the end of the function
+    body <- sub("}.*$", "", body, perl = T)
+  }else{# check searches complete source file
+    body <- readLines(f)
+  }
+  x <- grep(expr, body, fixed=fixed)
+  
   if (!identical(x, integer(0))){
-    special_print(paste0("@OK@",what))
+    special_print(paste0(ifelse(!negate,"@OK@","@FAIL@"),what))
   }else{
-    special_print(paste0("@FAIL@",what))
+    special_print(paste0(ifelse(!negate,"@FAIL@","@OK@"),what))
   }
 }
 # expect solution file as command line argument
@@ -82,8 +93,18 @@ if (inherits(res, "try-error")) {
   special_print("@ERROR@Error while loading your solution")
 }else{
   # add required test functions to sandbox environment
+  sandbox$test.create_sequence_from_10_to_20 <- function(){
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- create_sequence_from_10_to_20()
+    sink()
+    checkEquals(length(res), 11, "length of list")
+    checkTrue(res[2]-res[1] == 1, "step size")
+    checkEqualsNumeric(res, 10:20, "values")
+  }
+  environment(sandbox$test.create_sequence_from_10_to_20) <- sandbox
+
   sandbox$test.create_sequence_from_20_to_30 <- function(){
-    sink(file="/dev/null")
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
       res <- create_sequence_from_20_to_30()
     sink()
     checkEquals(length(res), 11, "length of list")
@@ -92,15 +113,46 @@ if (inherits(res, "try-error")) {
   }
   environment(sandbox$test.create_sequence_from_20_to_30) <- sandbox
 
-  sandbox$test.create_sequence_from_10_to_20 <- function(){
-    sink(file="/dev/null")
-      res <- create_sequence_from_10_to_20()
+  sandbox$test.create_sequence_from_40_to_80 <- function(){
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- create_sequence_from_40_to_80()
     sink()
-    checkEquals(length(res), 11, "length of list")
-    checkTrue(res[2]-res[1] == 1, "step size")
-    checkEqualsNumeric(res, 10:20, "values")
+    checkTrue(res[2]-res[1] == 2, "step size")
+    checkEqualsNumeric(res, seq(40,80,2), "values")
+    checkSourceContains("seq(", "use seq function", fixed=T)
   }
-  environment(sandbox$test.create_sequence_from_10_to_20) <- sandbox
+  environment(sandbox$test.create_sequence_from_40_to_80) <- sandbox
+
+  sandbox$test.sum_4th_and_6th_position <- function(){
+    vec <- c(10:20)
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- sum_4th_and_6th_position(vec)
+    sink()
+    checkEquals(res,28,"value") # 13+15
+    vec <- c(20:40)
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- sum_4th_and_6th_position(vec)
+    sink()
+    checkEquals(res,48, "value") # 23+25
+  }
+  environment(sandbox$test.sum_4th_and_6th_position) <- sandbox
+
+  sandbox$test.sum_vec1_and_vec2_without_plus <- function(){
+    checkSourceContains("+","not used +",fname="sum_vec1_and_vec2_without_plus", fixed=T,negate=T) 
+    vec1 <- c(10:20)
+    vec2 <- c(20:30)
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- sum_vec1_and_vec2_without_plus(vec1,vec2)
+    sink()
+    checkEqualsNumeric(res,440,"standard values") 
+    vec1 <- c(20:40)
+    vec2 <- c(20:40)
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- sum_vec1_and_vec2_without_plus(vec1,vec2)
+    sink()
+    checkEqualsNumeric(res,1260, "new values") 
+  }
+  environment(sandbox$test.sum_vec1_and_vec2_without_plus) <- sandbox
 
 
   sandbox$special_print <- function(what){

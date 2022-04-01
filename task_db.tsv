@@ -1,4 +1,6 @@
-competency	points	function	signature	checkr	task
-vector_basics	3	create_sequence_from_10_to_20	function()	vector_basics/create_sequence_from_10_to_20.R	vector_basics/create_sequence_from_10_to_20.txt
-vector_basics	3	create_sequence_from_20_to_30	function()	vector_basics/create_sequence_from_20_to_30.R	vector_basics/create_sequence_from_20_to_30.txt
-vector_basics	3	create_sequence_from_40_to_80	function()	vector_basics/create_sequence_from_40_to_80.R	vector_basics/create_sequence_from_40_to_80.txt
+competency	points	function	signature	stdparams	checkr	task
+vector_basics	3	create_sequence_from_10_to_20	function()		vector_basics/create_sequence_from_10_to_20.R	vector_basics/create_sequence_from_10_to_20.txt
+vector_basics	3	create_sequence_from_20_to_30	function()		vector_basics/create_sequence_from_20_to_30.R	vector_basics/create_sequence_from_20_to_30.txt
+vector_basics	3	create_sequence_from_40_to_80	function()		vector_basics/create_sequence_from_40_to_80.R	vector_basics/create_sequence_from_40_to_80.txt
+sum_basics	2	sum_4th_and_6th_position	function(vec)	vec=c(10:20)	sum_basics/sum_4th_and_6th_position.R	sum_basics/sum_4th_and_6th_position.txt
+sum_basics	2	sum_vec1_and_vec2_without_plus	function(vec1,vec2)	vec1=c(10:20),vec2=c(20:30)	sum_basics/sum_vec1_and_vec2_without_plus.R	sum_basics/sum_vec1_and_vec2_without_plus.txt

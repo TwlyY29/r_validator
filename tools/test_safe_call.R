@@ -1,6 +1,3 @@
-@FUN_TEST@ <- function(){
-  sink(file="/dev/null")
-    res <- @FUN_CALL@
-  sink()
-  @TESTS@
-}
+sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+  res <- @FUN_CALL@
+sink()

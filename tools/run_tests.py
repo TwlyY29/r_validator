@@ -37,7 +37,9 @@ def main(config='validator.config'):
             elif '@NTESTS@' in line:
               n_tests += int(line.strip()[8:len(line)])
             elif '@FAIL@' in line:
-              raise Exception(f"failed test '{current_name}' in {str(sol_file.resolve())}")
+              raise Exception(f"failed test '{(line.split('@'))[2]}' in function '{current_name}' ({str(sol_file.resolve())})")
+            elif '@ERROR@' in line:
+              raise Exception(f"error '{(line.split('@'))[2]}' occured in {str(sol_file.resolve())}")
           print(f"  checked {n_tasks} tasks with {n_correct}/{n_tests} successful checks\n#########")
 
 if __name__=='__main__':

@@ -1,0 +1,1 @@
+Sum 4th and 6th position in vector 'vec'

@@ -31,12 +31,14 @@ def sample_tasks_for_competencies(task_config_file, taskdb, config):
       k = int(line['n_tasks'])
       l = len(tasks)
       if k < l:
-        indices += random.sample(range(l), k=k)
+        w = random.sample(range(l), k=k)
       elif k==l:
-        indices += range(l)
+        w = range(l)
+      for idx in w:
+        indices.append(next((index for (index, d) in enumerate(taskdb) if d["function"] == tasks[idx]['function']), None))
   return indices
 
-def create_solution_file(identifier, indices, taskdb, solfile, config):
+def create_task_file_for_student(identifier, indices, taskdb, solfile, config):
   out = ''
   n_points = 0
   for idx,i in enumerate(indices):
@@ -44,25 +46,44 @@ def create_solution_file(identifier, indices, taskdb, solfile, config):
     fun_name = task['function']
     fun_sig = task['signature']
     fun_points = task['points']
+    fun_example_call = task['stdparams']
     n_points += int(fun_points)
     fun_task = read_task_description(task['task'], config.get('R_TASKS_DESCRDIR'))
-    out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n#\n# Do NOT change the following line\n{fun_name} <- {fun_sig}{{\n  # Add your solution here\n  \n}}\n\n"
+    out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n#\n# Do NOT change the following line\n{fun_name} <- {fun_sig}{{\n  # Add your solution here\n  \n}}\n{fun_name}({fun_example_call})\n\n"
   with open(solfile, 'w') as _sol:
     timestamp = datetime.strftime(datetime.now(),'%Y-%m-%d')
     print(f"################################\n# DO NOT MODIFY THIS BLOCK!\n# id: {identifier}\n# created: {timestamp}\n# achievable score: {n_points}\n# DO NOT MODIFY THIS BLOCK! \n################################\n\n", file=_sol)
     print(out, file=_sol)
 
-def load_source_file(fun_test, fun_task, fun_file, config, indent=2):
-  content = None
+def load_source_file(fun_test, taskdb_entry, config, indent=2):
+  fun_task = taskdb_entry['function']+taskdb_entry['signature'].replace('function','')
+  fun_file = taskdb_entry['checkr']
+  
+  base_call = ''
   with open (config.get('BASE_TEST_CALL'), 'r' ) as _testf:
-    content = (' '*indent).join(_testf.readlines())
-    content = re.sub('@FUN_TEST@', fun_test, content, flags=re.M)
-    content = re.sub('@FUN_CALL@', fun_task, content, flags=re.M)
-    with open(Path(config.get('R_TESTS_SOURCEDIR'), fun_file), 'r') as _f:
-      tmp = ''.join(_f.readlines())
-      tmp = tmp.rstrip('\n').replace('\n', '\n'+' '*(indent+2))
-      content = re.sub('@TESTS@', tmp, content, flags=re.M)
-    # ~ content = content.rstrip('\n').replace('\n', '\n'+' '*indent)
+    # ~ base_call = (' '*indent).join(_testf.readlines())
+    base_call = ''.join(_testf.readlines())
+    base_call = re.sub('@FUN_CALL@', fun_task, base_call, flags=re.M)
+    base_call = base_call.rstrip('\n')
+  
+  just_call = True
+  tests = ''
+  with open(Path(config.get('R_TESTS_SOURCEDIR'), fun_file), 'r') as _f:
+    tests = ''.join(_f.readlines())
+    # ~ tests = tmp.rstrip('\n').replace('\n', '\n'+' '*(indent+2))
+    if '@CALL@' in tests:
+      tests = tests.replace('@CALL@', base_call)
+      if '@STD_PARAMS@' in tests:
+        params = '\n'.join([p.strip().replace('=',' <- ') for p in taskdb_entry['stdparams'].split(',')])
+        tests = tests.replace('@STD_PARAMS@', params)
+      tests = tests.rstrip('\n')
+      just_call = False
+  
+  content = f"{fun_test} <- function(){{\n"
+  if just_call:
+    content += ' '*(indent+2) + base_call.replace('\n', '\n'+' '*(indent+2))+ '\n'
+  content += ' '*(indent+2) + tests.rstrip('\n').replace('\n', '\n'+' '*(indent+2)) + '\n'+ ' '*indent + '}'
+  content = content.replace('@FNAME@', taskdb_entry['function'])
   return content.rstrip('\n')
 
 def prepare_sandboxed_inline_test(funcname, func, indent=2):
@@ -77,7 +98,7 @@ def create_test_file(indices, taskdb, solfile, outdir, config):
   for i in indices:
     f = taskdb[i]['function']
     ftest = f'test.{f}'
-    src = load_source_file( ftest, f+'()', taskdb[i]['checkr'], config)
+    src = load_source_file( ftest, taskdb[i], config)
     test_sources += prepare_sandboxed_inline_test(ftest, src) + '\n'
     test_functions.append( ftest )
     r_functions.append( f'{f}' )
@@ -106,7 +127,7 @@ def pack_student(student, task_config, taskdb, config):
   p = Path(config.get('outdir'), student)
   p.mkdir(parents=True, exist_ok=True)
   sol_file = Path(p,'task.R')
-  create_solution_file(student, task_config, taskdb, str(sol_file.resolve()), config)
+  create_task_file_for_student(student, task_config, taskdb, str(sol_file.resolve()), config)
   create_test_file(task_config, taskdb, str(sol_file.resolve()), str(p.resolve()), config)
   write_out_task_ids_for_student(taskdb, task_config, Path(p, 'tasks.tsv'))
 

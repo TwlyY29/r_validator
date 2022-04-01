@@ -11,16 +11,16 @@ TASKDIR=$(TASKBASENAME:$(suffix $(TASKBASENAME))=)
 
 $(info compiling $(TASKDIR))
 
-all: packages solutions
+all: packages solution tests
 
 
 packages: $(CONFFILE)
 	python3 $(TOOLSDIR)/create_packages.py $(STUDENTS_FILE) $(TASKS_FILE) $(CONFFILE)
 
-solutions: packages
+solution: packages
 	cd $(TASKDIR) && python3 $(TOOLSDIR)/make_solutions.py $(CONFFILE)
 
-tests:	solutions
+tests: solution
 	cd $(TASKDIR) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)
 
 .INTERMEDIATE: $(CONFFILE)

@@ -61,13 +61,24 @@ checkError <- function(expr, what, silent=TRUE){
     special_print(paste0("@FAIL@",what))
   }
 }
-checkSourceContains <- function(expr, what, f=solution, fixed=TRUE){
+checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, negate=FALSE){
   n_tests_running <<- n_tests_running+1
-  x <- grep(expr, readLines(f), fixed=fixed)
+  if(!is.null(fname)){# check only searches body of function
+    # read in the source file
+    body <- paste(readLines(f),collapse='') 
+    # remove everything up to the start of the function
+    body <- sub(paste0("^.*",fname,"[^{]*{",collapse=''),"",body, perl=T)
+    # remove everything starting from the end of the function
+    body <- sub("}.*$", "", body, perl = T)
+  }else{# check searches complete source file
+    body <- readLines(f)
+  }
+  x <- grep(expr, body, fixed=fixed)
+  
   if (!identical(x, integer(0))){
-    special_print(paste0("@OK@",what))
+    special_print(paste0(ifelse(!negate,"@OK@","@FAIL@"),what))
   }else{
-    special_print(paste0("@FAIL@",what))
+    special_print(paste0(ifelse(!negate,"@FAIL@","@OK@"),what))
   }
 }
 # expect solution file as command line argument
