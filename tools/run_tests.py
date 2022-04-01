@@ -13,6 +13,10 @@ def init_config(config_file):
 def main(config='validator.config'):
   config = init_config(config)
   
+  rscript = config.get('RSCRIPT_EXECUTABLE')
+  if '\\' in rscript and not '\\\\' in rscript:
+    rscript = rscript.replace('\\','\\\\')
+  
   here = Path(os.getcwd())
   for p in here.rglob("*"):
     if p.is_dir():
@@ -20,7 +24,7 @@ def main(config='validator.config'):
       sol_file = Path(p, 'solution.R')
       if test_file.exists() and sol_file.exists():
         print(f"#########\n  student {p.name}")
-        cmd = f"Rscript --vanilla {test_file.name} {sol_file.name}"
+        cmd = f"{rscript} --vanilla {test_file.name} {sol_file.name}"
         result = subprocess.run(cmd.split(' '), stdout=subprocess.PIPE, cwd = str(p.resolve()))
         result = result.stdout.decode('utf-8').strip()
         if result:

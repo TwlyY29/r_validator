@@ -1,28 +1,34 @@
-BASEDIR=$(shell pwd)
+BASEDIR=${CURDIR}
+
+TASKS_FILE=$(BASEDIR)/task_1.tsv
+RSCRIPT_EXE="C:\Program Files\R\bin\Rscript.exe"
 
 STUDENTS_FILE=$(BASEDIR)/students.tsv
-TASKS_FILE=$(BASEDIR)/task_1.tsv
-
 TOOLSDIR=$(BASEDIR)/tools
 CONFFILE=$(TOOLSDIR)/validator.config
 CONFFILE_ENV=$(addsuffix .env, $(CONFFILE))
+CONFFILE_ENVWIN=$(addsuffix .env_win, $(CONFFILE))
 TASKBASENAME=$(notdir $(TASKS_FILE))
 TASKDIR=$(TASKBASENAME:$(suffix $(TASKBASENAME))=)
 
-$(info compiling $(TASKDIR))
+$(info creating tasks from $(TASKS_FILE) to $(TASKDIR))
 
-all: packages solution tests
+all: taskfiles solutionfiles tests
 
-
-packages: $(CONFFILE)
+taskfiles: $(CONFFILE)
 	python3 $(TOOLSDIR)/create_packages.py $(STUDENTS_FILE) $(TASKS_FILE) $(CONFFILE)
 
-solution: packages
+solutionfiles: taskfiles $(CONFFILE)
 	cd $(TASKDIR) && python3 $(TOOLSDIR)/make_solutions.py $(CONFFILE)
 
-tests: solution
+tests: solutionfiles $(CONFFILE)
 	cd $(TASKDIR) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)
 
-.INTERMEDIATE: $(CONFFILE)
+
+ifeq ($(OS),Windows_NT)
+$(CONFFILE): $(CONFFILE_ENVWIN)
+	powershell -command "$$Env:BASEDIR = '$(BASEDIR)'; $$Env:RSCRIPT_EXE = '$(RSCRIPT_EXE)'; Get-Content $< | foreach { [System.Environment]::ExpandEnvironmentVariables($$_) } | Set-Content -path $@"
+else
 $(CONFFILE): $(CONFFILE_ENV)
 	BASEDIR="$(BASEDIR)" envsubst < $< > $@
+endif
