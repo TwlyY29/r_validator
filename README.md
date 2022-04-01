@@ -68,7 +68,7 @@ The solution of a student is inside an object called `res` (this is specified in
 * `checkError`: checks if something produces an error
 * `checkSourceContains`: checks if the submission source code contains a pattern. This can be focused on a function body as well.
 
-Have a look at [two](tests/vector_basics/create_sequence_from_40_to_80.R) basic [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. A rather advanced check that also makes use of function parameters is found in [sum_vec1_and_vec2_without_plus](tests/sum_basics/sum_vec1_and_vec2_without_plus).
+Have a look at two [basic](tests/vector_basics/create_sequence_from_40_to_80.R) [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. A rather advanced check that also makes use of function parameters is found in [sum_vec1_and_vec2_without_plus](tests/sum_basics/sum_vec1_and_vec2_without_plus).
 
 Every check produces an output if the test succeeded or if it failed. This output will be used to count the points inside an execution environment like the [Virtual Programming Lab](#Using-this-with-Virtual-Programming-Lab) or the Praktomat.
 
@@ -149,10 +149,10 @@ make tests
 
 Be aware that this creates solution files!
 
-### Using this in Windows
-You can also use this system with Windows. Therefore, you just need a way to execute a `Makefile` and `python3`.
+### Using this under Windows
+You can also use this system with Windows. The python3 scripts are fairly platform-independent. The only thing is to adjust the path to your `Rscript.exe` if you want to execute your tests locally. The adjustments either go into a `validator.config`. If you do not want to create one yourself from [the example](tools/validator.config.env_win), you can use the `Makefile`. You just need a way to execute it.
 
-I tried using [chocolatery](https://chocolatey.org/) which works fairly well. To get this running, follow these steps:
+To execute `make` commands under Windows, I tried using [chocolatery](https://chocolatey.org/) which works fairly well. To get this running, follow these steps:
 
 1. Open PowerShell with Administrator privileges<br/>
    Open the Start Menu, search for PowerShell, and right-click the icon selecting "Open with Admin..."
@@ -164,4 +164,5 @@ I tried using [chocolatery](https://chocolatey.org/) which works fairly well. To
    If this opens the Windows App Store, install Python 3 from there. Otherwise hit CTRL+D to exit the Python shell
 7. Run `pip3 install plac` still in the PowerShell
 8. Open the [`Makefile`](Makefile) in [a good text editor](https://geany.org/) and ajdust the path to your `RScript.exe`. It resides in the install directory of `R` in the subfolder `bin\`
-9. 
+
+Now you're good to go. Just refer to [the usage section](#usage).
