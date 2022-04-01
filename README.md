@@ -21,13 +21,23 @@ The following describes the system in-depth.
 ### The Task Database
 There is one central task database:
 
-| Competency | Points | Function Name | Signature | Test/Rump | Task Description |
-| --- | --- | --- | --- | --- | --- |
-| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | vector_basics/create_sequence_from_10_to_20.R | vector_basics/create_sequence_from_10_to_20.txt |
-| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | vector_basics/create_sequence_from_20_to_30.R | vector_basics/create_sequence_from_20_to_30.txt |
-| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | vector_basics/create_sequence_from_40_to_80.R | vector_basics/create_sequence_from_40_to_80.txt |
+| Competency | Points | Function Name | Signature | Standard Parameters | Test/Rump | Task Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | | vector_basics/create_sequence_from_10_to_20.R | vector_basics/create_sequence_from_10_to_20.txt |
+| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | | vector_basics/create_sequence_from_20_to_30.R | vector_basics/create_sequence_from_20_to_30.txt |
+| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | | vector_basics/create_sequence_from_40_to_80.R | vector_basics/create_sequence_from_40_to_80.txt |
+| sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) | sum_basics/sum_4th_and_6th_position.R | sum_basics/sum_4th_and_6th_position.txt |
+| sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) | sum_basics/sum_vec1_and_vec2_without_plus.R | sum_basics/sum_vec1_and_vec2_without_plus.txt |
 
 It lists all the available tasks together with some meta information. Tasks belong to a certain competency. This example consists of a single competency. But you get the idea. 
+
+As you can see, the functions of the `sum_basics` competency take parameters. The column Standard Parameters contains a standard intitialization of the parameters as if they were part of a function call, e.g. 
+
+```
+sum_vec1_and_vec2_without_plus <- function(vec1=c(10:20), vec2=c(20:30)) ...
+```
+
+They have to be given in a separate column instead of the Signature-colum to allow for testing of the standard values later.
 
 The description of the task is given in the specified file in your `tasks`-directory. Have a look at [one example description](tasks/vector_basics/create_sequence_from_40_to_80.txt).
 
@@ -45,7 +55,7 @@ To be able to check a submission for correctness, we formulate some requirements
 * **Tasks are functions.**<br/>
     A student has to enter her solution to a task inside the body of a function. Anything that is written outside the body of the function does not count as a solution to a task.
 * **Tasks produce results.**<br/>
-    The function has to produce one result object.
+    The function has to produce one result object. The result object is what can be evaluated in your checks. It is passed to your checks in a variable `res`.
 * **Only tasks count.**<br/>
     For testing an individual task, the corresponding function is called. Effects of sourcing the student submission file do not count to individual tasks.
 
@@ -56,9 +66,9 @@ The solution of a student is inside an object called `res` (this is specified in
 * `checkTrue`: checks if some condition is met
 * `checkIdentical`: checks if some object is identical to something else
 * `checkError`: checks if something produces an error
-* `checkSourceContains`: checks if the submission source code contains a pattern
+* `checkSourceContains`: checks if the submission source code contains a pattern. This can be focused on a function body as well.
 
-Have a look at [two](tests/vector_basics/create_sequence_from_40_to_80.R) [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. 
+Have a look at [two](tests/vector_basics/create_sequence_from_40_to_80.R) basic [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. A rather advanced check that also makes use of function parameters is found in [sum_vec1_and_vec2_without_plus](tests/sum_basics/sum_vec1_and_vec2_without_plus).
 
 Every check produces an output if the test succeeded or if it failed. This output will be used to count the points inside an execution environment like the [Virtual Programming Lab](#Using-this-with-Virtual-Programming-Lab) or the Praktomat.
 
@@ -68,12 +78,15 @@ A task sheet is defined by creating a table of competencies and a number of task
 | Competency | Number of Tasks|
 | --- | --- |
 | vectors_basics | 2 |
+| sum_basics | 2 |
 
 The competency `vectors_basics` should be tested with 2 different tasks per student. From our [task database](task_db.tsv) [above](#The-Task-Database) we know that we have 3 tasks in our database.
 
 Since we have more tasks available than required for the sheet, the tasks are **randomly sampled** for **each student individually**. That's why we need to test each student's submission with an individual test as well. 
 
-Have a look at [an individual task sheet](task_1/123456/task.R).
+For the competency `sum_basics` all available tasks will be used.
+
+Have a look at [an individual task sheet](task_1/123456/task.R). As you can see, a function call is inserted to support students in developing and exectuing their answer. Also, for functions taking parameters, this makes explicit what kind of parameters should be processed.
 
 ### Testing Submissions
 The [individual task sheet](task_1/123456/task.R) is tested using the [corresponding individual test sheet](task_1/123456/test.R). 
