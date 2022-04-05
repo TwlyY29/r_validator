@@ -24,8 +24,8 @@ def main(config='validator.config'):
       sol_file = Path(p, 'solution.R')
       if test_file.exists() and sol_file.exists():
         print(f"#########\n  student {p.name}")
-        cmd = f"{rscript} --vanilla {test_file.name} {sol_file.name}"
-        result = subprocess.run(cmd.split(' '), stdout=subprocess.PIPE, cwd = str(p.resolve()))
+        cmd = [rscript] + f"--vanilla {test_file.name} {sol_file.name}".split(' ')
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, cwd = str(p.resolve()))
         result = result.stdout.decode('utf-8').strip()
         if result:
           n_tasks = 0
