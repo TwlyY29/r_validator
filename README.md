@@ -19,7 +19,7 @@ To be able to put this together, you need a database of tasks, task descriptions
 The following describes the system in-depth.
 
 ### The Task Database
-There is one central task database:
+There is one central task database [task_db.tsv](task_db.tsv):
 
 | Competency | Points | Function Name | Signature | Standard Parameters | Test/Rump | Task Description |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -59,7 +59,9 @@ To be able to check a submission for correctness, we formulate some requirements
 * **Only tasks count.**<br/>
     For testing an individual task, the corresponding function is called. Effects of sourcing the student submission file do not count to individual tasks.
 
-The solution of a student is inside an object called `res` (this is specified in the [test_safe_call.R](tools/test_safe_call.R) if you're interested in the nitty whitty details). You have a few built-in possibilities to perform checks of this `res` object:
+The solution of a student is inside an object called `res`. The call to the student's function is assembled from the content of the columns "Function Name", "Signature" (and, optionally, "Standard Parameters") of the [task_db.tsv](task_db.tsv). It is surrounded with a few "security measurements" in order to prevent students from printing something that increases the point-counter (as specified in the [test_safe_call.R](tools/test_safe_call.R) if you're interested in the nitty whitty details). 
+
+However, a test calls the student's function and saves the result in `res`. You have a few built-in possibilities to perform checks of this `res` object:
 
 * `checkEquals`: checks if two lists contain the same elements
 * `checkEqualsNumeric`: checks if two vectors contain the same numbers
@@ -68,7 +70,11 @@ The solution of a student is inside an object called `res` (this is specified in
 * `checkError`: checks if something produces an error
 * `checkSourceContains`: checks if the submission source code contains a pattern. This can be focused on a function body as well.
 
-Have a look at two [basic](tests/vector_basics/create_sequence_from_40_to_80.R) [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. A rather advanced check that also makes use of function parameters is found in [sum_vec1_and_vec2_without_plus](tests/sum_basics/sum_vec1_and_vec2_without_plus).
+Have a look at two [basic](tests/vector_basics/create_sequence_from_40_to_80.R) [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. A rather advanced check that also makes use of function parameters is found in [sum_vec1_and_vec2_without_plus.R](tests/sum_basics/sum_vec1_and_vec2_without_plus.R).
+
+Testing tasks with function parameters has two specialties: When defining your test, you can use `@STD_PARAMS@` and `@CALL@` in your R file. The keyword `@CALL@` is replaced by a call to the submitted function. It is assembled from the content of the columns "Function Name", "Signature" and "Standard Parameters" of the [task_db.tsv](task_db.tsv). The names of the parameters are the same as in the `task_db.tsv`. If the signature looks like `function(vec1)`, then you have to initialize the variable `vec1` somewhere in your test.
+
+The keyword `@STD_PARAMS@` will be replaced with the content of the column "Standard Parameters" of the [task_db.tsv](task_db.tsv). If you have multiple paramters defined there, the comma separating the parameters will be eliminated and the parameter initializations will be spread across lines. The resulting piece of R code then defines the parameters as variables.
 
 Every check produces an output if the test succeeded or if it failed. This output will be used to count the points inside an execution environment like the [Virtual Programming Lab](#Using-this-with-Virtual-Programming-Lab) or the Praktomat.
 
