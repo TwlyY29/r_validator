@@ -1,7 +1,7 @@
 BASEDIR=${CURDIR}
 
 TASKS_FILE=$(BASEDIR)/task_1.tsv
-RSCRIPT_EXE="C:\Program Files\R\bin\Rscript.exe"
+RSCRIPT_EXE=/usr/bin/Rscript
 
 STUDENTS_FILE=$(BASEDIR)/students.tsv
 TOOLSDIR=$(BASEDIR)/tools
@@ -30,5 +30,5 @@ $(CONFFILE): $(CONFFILE_ENVWIN)
 	powershell -command "$$Env:BASEDIR = '$(BASEDIR)'; $$Env:RSCRIPT_EXE = '$(RSCRIPT_EXE)'; Get-Content $< | foreach { [System.Environment]::ExpandEnvironmentVariables($$_) } | Set-Content -path $@"
 else
 $(CONFFILE): $(CONFFILE_ENV)
-	BASEDIR="$(BASEDIR)" envsubst < $< > $@
+	BASEDIR="$(BASEDIR)" RSCRIPT_EXE="$(RSCRIPT_EXE)" envsubst < $< > $@
 endif
