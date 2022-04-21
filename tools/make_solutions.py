@@ -20,7 +20,7 @@ def create_solution_file(task_meta, task_file, sol_file, config):
     db = csv.DictReader(_tsv, delimiter='\t')
     for task in db:
       f = task['function']
-      s = Path(config.get('R_TESTS_SOLUTIONDIR'), task['solution_file'])
+      s = Path(config.get('R_TESTS_SOLUTIONDIR'), task['competency'], f+'.R')
       if not s.exists():
         raise Exception(f"expecting solution file for function {f}: '{s}'")
       with open(s,'r') as _sol:

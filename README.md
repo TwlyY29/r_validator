@@ -21,15 +21,15 @@ The following describes the system in-depth.
 ### The Task Database
 There is one central task database [task_db.tsv](task_db.tsv):
 
-| Competency | Points | Function Name | Signature | Standard Parameters | Test/Rump | Task Description |
+| Competency | Points | Function Name | Signature | Standard Parameters  |
 | --- | --- | --- | --- | --- | --- | --- |
-| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | | vector_basics/create_sequence_from_10_to_20.R | vector_basics/create_sequence_from_10_to_20.txt |
-| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | | vector_basics/create_sequence_from_20_to_30.R | vector_basics/create_sequence_from_20_to_30.txt |
-| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | | vector_basics/create_sequence_from_40_to_80.R | vector_basics/create_sequence_from_40_to_80.txt |
-| sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) | sum_basics/sum_4th_and_6th_position.R | sum_basics/sum_4th_and_6th_position.txt |
-| sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) | sum_basics/sum_vec1_and_vec2_without_plus.R | sum_basics/sum_vec1_and_vec2_without_plus.txt |
+| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | |
+| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | |
+| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | |
+| sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) |
+| sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) |
 
-It lists all the available tasks together with some meta information. Tasks belong to a certain competency. This example consists of a single competency. But you get the idea. 
+It lists all the available tasks together with some meta information. Tasks belong to a certain competency.
 
 As you can see, the functions of the `sum_basics` competency take parameters. The column Standard Parameters contains a standard intitialization of the parameters as if they were part of a function call, e.g. 
 
@@ -39,9 +39,12 @@ sum_vec1_and_vec2_without_plus <- function(vec1=c(10:20), vec2=c(20:30)) ...
 
 They have to be given in a separate column instead of the Signature-colum to allow for testing of the standard values later.
 
+### Required Files
+For the system to be able to put together task descriptions, tests, and standard solutions, you need to have **three files for each of the specified functions**. In all cases, you need to have a **subdirectory that matches the competency** and a **file inside that subdirectory matching the function name** in the `task_db.tsv`. These things go intro the three directories `tasks`, `tests`, and `solutions`.
+
 The description of the task is given in the specified file in your `tasks`-directory. Have a look at [one example description](tasks/vector_basics/create_sequence_from_40_to_80.txt).
 
-The tests and the solution of a task are given in the file stated in the 'Test/Rump' column. Note that this references two different files - one in your `tests` folder and one in your `solutions` folder. In both of these folders, you'll find the sub-folder `vector_basics` and the file `create_sequence_from_40_to_80.R`. 
+The tests and the solution of a task are given in corresponding files in your `tests` folder and one in your `solutions` folder. In both of these folders, you'll find the sub-folder `vector_basics` and the file `create_sequence_from_40_to_80.R`. 
 
 Have a look at the [file in `tests/` folder](tests/vector_basics/create_sequence_from_40_to_80.R) and the  [file in `solutions/` folder](solutions/vector_basics/create_sequence_from_40_to_80.R). The file in `solutions` contains the correct solution. Note that it does not contain the function name as this will be put together automatically later. 
 

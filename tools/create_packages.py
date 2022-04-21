@@ -8,9 +8,9 @@ from pathlib import Path
 import configparser
 import random
 
-def read_task_description(task_file, taskdescriptiondir):
+def read_task_description(fun_name, fun_competency, taskdescriptiondir):
   out=''
-  with open(Path(taskdescriptiondir, task_file).resolve(), 'r') as _f:
+  with open(Path(taskdescriptiondir, fun_competency, fun_name+'.txt').resolve(), 'r') as _f:
     for line in _f:
       out += '\n# ' + line.strip()
   return out
@@ -47,8 +47,9 @@ def create_task_file_for_student(identifier, indices, taskdb, solfile, config):
     fun_sig = task['signature']
     fun_points = task['points']
     fun_example_call = task['stdparams']
+    fun_competency = task['competency']
     n_points += int(fun_points)
-    fun_task = read_task_description(task['task'], config.get('R_TASKS_DESCRDIR'))
+    fun_task = read_task_description(fun_name, fun_competency, config.get('R_TASKS_DESCRDIR'))
     out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n#\n# Do NOT change the following line\n{fun_name} <- {fun_sig}{{\n  # Add your solution here\n  \n}}\n{fun_name}({fun_example_call})\n\n"
   with open(solfile, 'w') as _sol:
     timestamp = datetime.strftime(datetime.now(),'%Y-%m-%d')
@@ -57,7 +58,7 @@ def create_task_file_for_student(identifier, indices, taskdb, solfile, config):
 
 def load_source_file(fun_test, taskdb_entry, config, indent=2):
   fun_task = taskdb_entry['function']+taskdb_entry['signature'].replace('function','')
-  fun_file = taskdb_entry['checkr']
+  fun_file = Path(taskdb_entry['competency'], taskdb_entry['function']+'.R')
   
   base_call = ''
   with open (config.get('BASE_TEST_CALL'), 'r' ) as _testf:
@@ -91,7 +92,6 @@ def prepare_sandboxed_inline_test(funcname, func, indent=2):
   return f"{ind}sandbox${func}\n{ind}environment(sandbox${funcname}) <- sandbox\n"
 
 def create_test_file(indices, taskdb, solfile, outdir, config):
-  # ~ test_files = '","'.join([taskdb[i]['checkr'] for i in indices])
   test_sources = ''
   test_functions = []
   r_functions = []
@@ -115,13 +115,12 @@ def create_test_file(indices, taskdb, solfile, outdir, config):
 
 def write_out_task_ids_for_student(taskdb, task_config, outfile):
   with open(outfile, 'w') as _f:
-    print("competency\tpoints\tfunction\tsolution_file", file=_f)
+    print("competency\tpoints\tfunction", file=_f)
     for t in task_config:
       c = taskdb[t]['competency']
       fun = taskdb[t]['function']
-      sol = taskdb[t]['checkr']
       p = taskdb[t]['points']
-      print(f"{c}\t{p}\t{fun}\t{sol}", file=_f)
+      print(f"{c}\t{p}\t{fun}", file=_f)
 
 def pack_student(student, task_config, taskdb, config):
   p = Path(config.get('outdir'), student)
