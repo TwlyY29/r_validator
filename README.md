@@ -28,10 +28,11 @@ There is one central task database [task_db.tsv](task_db.tsv):
 | vectors_basics | 3 | create_sequence_from_40_to_80 | function() | |
 | sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) |
 | sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) |
+| plot_basics | 4 | plot_pie_chart | function(data, labels, main) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel" |
 
 It lists all the available tasks together with some meta information. Tasks belong to a certain competency.
 
-As you can see, the functions of the `sum_basics` competency take parameters. The column Standard Parameters contains a standard intitialization of the parameters as if they were part of a function call, e.g. 
+As you can see, the functions of the `sum_basics` and `plot_basics` competency take parameters. The column Standard Parameters contains a standard intitialization of the parameters as if they were part of a function call, e.g. 
 
 ```
 sum_vec1_and_vec2_without_plus <- function(vec1=c(10:20), vec2=c(20:30)) ...
@@ -73,11 +74,13 @@ However, a test calls the student's function and saves the result in `res`. You 
 * `checkError`: checks if something produces an error
 * `checkSourceContains`: checks if the submission source code contains a pattern. This can be focused on a function body as well.
 
-Have a look at two [basic](tests/vector_basics/create_sequence_from_40_to_80.R) [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. A rather advanced check that also makes use of function parameters is found in [sum_vec1_and_vec2_without_plus.R](tests/sum_basics/sum_vec1_and_vec2_without_plus.R).
+Have a look at two [basic](tests/vector_basics/create_sequence_from_40_to_80.R) [examples](tests/vector_basics/create_sequence_from_10_to_20.R) to see some of the functions in action. A rather advanced check that also makes use of function parameters is found in [sum_vec1_and_vec2_without_plus.R](tests/sum_basics/sum_vec1_and_vec2_without_plus.R). Finally, make sure to have a look at [plot_pie_chart.R](tests/plot_basics/plot_pie_chart.R) to see how you can check if a file is created during execution of a submitted function. That example expects the `Rplots.pdf` to be created to test if a plot was created.
 
 Testing tasks with function parameters has two specialties: When defining your test, you can use `@STD_PARAMS@` and `@CALL@` in your R file. The keyword `@CALL@` is replaced by a call to the submitted function. It is assembled from the content of the columns "Function Name", "Signature" and "Standard Parameters" of the [task_db.tsv](task_db.tsv). The names of the parameters are the same as in the `task_db.tsv`. If the signature looks like `function(vec1)`, then you have to initialize the variable `vec1` somewhere in your test.
 
 The keyword `@STD_PARAMS@` will be replaced with the content of the column "Standard Parameters" of the [task_db.tsv](task_db.tsv). If you have multiple paramters defined there, the comma separating the parameters will be eliminated and the parameter initializations will be spread across lines. The resulting piece of R code then defines the parameters as variables.
+
+One thing related to `checkSourceContains` is worth mentioning. That check looks for a string or a pattern in the source file. If you want to restrict the search to the **body of a specific function**, you can pass it `fname="@FNAME@"` as a parameter. First, `@FNAME@` will be replaced by the function to test. Second, this will limit the search to the body of said function.
 
 Every check produces an output if the test succeeded or if it failed. This output will be used to count the points inside an execution environment like the [Virtual Programming Lab](#Using-this-with-Virtual-Programming-Lab) or the Praktomat.
 

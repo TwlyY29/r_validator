@@ -2,7 +2,7 @@
 # DO NOT MODIFY THIS BLOCK!
 # id: 345678
 # created: 2022-04-21
-# achievable score: 13
+# achievable score: 17
 # DO NOT MODIFY THIS BLOCK! 
 ################################
 
@@ -62,5 +62,16 @@ sum_vec1_and_vec2_without_plus <- function(vec1,vec2){
   
 }
 sum_vec1_and_vec2_without_plus(vec1=c(10:20),vec2=c(20:30))
+
+# Task 6:
+# 4 Points
+# Plot a pie chart. Assign labels to the plots. And give a speaking title.
+#
+# Do NOT change the following line
+plot_pie_chart <- function(data, labels, main){
+  # Add your solution here
+  
+}
+plot_pie_chart(data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel")
 
 

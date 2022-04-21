@@ -56,6 +56,28 @@ def create_task_file_for_student(identifier, indices, taskdb, solfile, config):
     print(f"################################\n# DO NOT MODIFY THIS BLOCK!\n# id: {identifier}\n# created: {timestamp}\n# achievable score: {n_points}\n# DO NOT MODIFY THIS BLOCK! \n################################\n\n", file=_sol)
     print(out, file=_sol)
 
+def split_std_params(params):
+  if ',' in params:
+    def handle_assignment(assgnm):
+      return assgnm.strip().replace('=',' <- ')
+    out = ''
+    last_param = ''
+    ignore_comma = False
+    for char in params:
+      if char in ['"', '(', "'"]:
+        ignore_comma = True
+      elif ignore_comma and char in ['"', ')', "'"]:
+        ignore_comma = False
+      
+      if not ignore_comma and char == ',':
+        out += handle_assignment(last_param) + '\n'
+        last_param = ''
+      else:
+        last_param += char
+    return out + handle_assignment(last_param)
+  else:
+    return params
+
 def load_source_file(fun_test, taskdb_entry, config, indent=2):
   fun_task = taskdb_entry['function']+taskdb_entry['signature'].replace('function','')
   fun_file = Path(taskdb_entry['competency'], taskdb_entry['function']+'.R')
@@ -75,7 +97,7 @@ def load_source_file(fun_test, taskdb_entry, config, indent=2):
     if '@CALL@' in tests:
       tests = tests.replace('@CALL@', base_call)
       if '@STD_PARAMS@' in tests:
-        params = '\n'.join([p.strip().replace('=',' <- ') for p in taskdb_entry['stdparams'].split(',')])
+        params = split_std_params(taskdb_entry['stdparams'])
         tests = tests.replace('@STD_PARAMS@', params)
       tests = tests.rstrip('\n')
       just_call = False

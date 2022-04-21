@@ -1,9 +1,9 @@
-n_cases <- 5
+n_cases <- 6
 test_cases <- c(
-  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus"
+  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus","test.plot_pie_chart"
 )
 cases_function_names <- c(
-  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus"
+  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus","plot_pie_chart"
 )
 n_tests_running <- 0
 
@@ -82,12 +82,24 @@ checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, 
   }
 }
 # expect solution file as command line argument
-solution <- commandArgs(trailingOnly=TRUE)[1]
+solution_raw <- commandArgs(trailingOnly=TRUE)[1]
+solution <- gsub('.R$','.exec.R',solution_raw)
+
+# we have added dummy execution of functions to help students test their functions
+# when sourcing the solution, these functions mustn't be executed because they
+# might produce Rplots.pdf - so we have no possibility to make sure that file
+# is created during testing
+tmp <- readLines(solution_raw)
+sapply(cases_function_names, function(fun){
+  pattern = paste0(fun,'(')
+  tmp <<- gsub(pattern = pattern, replace=paste0('#',pattern), x = tmp, fixed = T)
+})
+writeLines(tmp, solution)
 
 # set up a sandboxed environment
 sandbox <- new.env(parent=.GlobalEnv)
 
-# try to source student solution catching syntax errors 
+# try to source student solution catching syntax errors
 res <- try(sys.source(solution, envir=sandbox), silent=T)
 if (inherits(res, "try-error")) {
   special_print("@ERROR@Error while loading your solution")
@@ -154,6 +166,24 @@ if (inherits(res, "try-error")) {
   }
   environment(sandbox$test.sum_vec1_and_vec2_without_plus) <- sandbox
 
+  sandbox$test.plot_pie_chart <- function(){
+    checkSourceContains("pie(","used base pie function",fname="plot_pie_chart", fixed=T,negate=F)
+    checkSourceContains("main *=","assigned a title",fname="plot_pie_chart", fixed=F,negate=F) 
+    checkSourceContains("labels *=","assigned labels",fname="plot_pie_chart", fixed=F,negate=F)
+    files_before <- list.files(path=".")
+    data <- c(10,15,25,30,10,10)
+    labels <- LETTERS[1:6]
+    main <- "bla, fasel"
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- plot_pie_chart(data, labels, main)
+    sink()
+    files_after <- list.files(path=".")
+    new_files <- setdiff(files_after, files_before)
+    file.remove(new_files)
+    checkTrue("Rplots.pdf" %in% new_files, "Plot created (inside Rplots.pdf)")
+  }
+  environment(sandbox$test.plot_pie_chart) <- sandbox
+
 
   sandbox$special_print <- function(what){
     write(what, stdout())
@@ -174,4 +204,5 @@ if (inherits(res, "try-error")) {
   })
   special_print("@END@")
 }
+file.remove(solution)
 

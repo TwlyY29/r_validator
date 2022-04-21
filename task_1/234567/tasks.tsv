@@ -4,3 +4,4 @@ vector_basics	3	create_sequence_from_20_to_30
 vector_basics	3	create_sequence_from_40_to_80
 sum_basics	2	sum_4th_and_6th_position
 sum_basics	2	sum_vec1_and_vec2_without_plus
+plot_basics	4	plot_pie_chart

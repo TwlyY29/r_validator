@@ -82,12 +82,24 @@ checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, 
   }
 }
 # expect solution file as command line argument
-solution <- commandArgs(trailingOnly=TRUE)[1]
+solution_raw <- commandArgs(trailingOnly=TRUE)[1]
+solution <- gsub('.R$','.exec.R',solution_raw)
+
+# we have added dummy execution of functions to help students test their functions
+# when sourcing the solution, these functions mustn't be executed because they
+# might produce Rplots.pdf - so we have no possibility to make sure that file
+# is created during testing
+tmp <- readLines(solution_raw)
+sapply(cases_function_names, function(fun){
+  pattern = paste0(fun,'(')
+  tmp <<- gsub(pattern = pattern, replace=paste0('#',pattern), x = tmp, fixed = T)
+})
+writeLines(tmp, solution)
 
 # set up a sandboxed environment
 sandbox <- new.env(parent=.GlobalEnv)
 
-# try to source student solution catching syntax errors 
+# try to source student solution catching syntax errors
 res <- try(sys.source(solution, envir=sandbox), silent=T)
 if (inherits(res, "try-error")) {
   special_print("@ERROR@Error while loading your solution")
@@ -113,3 +125,4 @@ if (inherits(res, "try-error")) {
   })
   special_print("@END@")
 }
+file.remove(solution)
