@@ -1,0 +1,2 @@
+Plot a barplot. Assign labels to the plots. And give a speaking title.
+Make sure the plot is saved to the png file

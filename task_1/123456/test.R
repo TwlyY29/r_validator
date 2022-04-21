@@ -1,9 +1,9 @@
-n_cases <- 6
+n_cases <- 7
 test_cases <- c(
-  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus","test.plot_pie_chart"
+  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus","test.plot_pie_chart","test.plot_barplot_to_png"
 )
 cases_function_names <- c(
-  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus","plot_pie_chart"
+  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus","plot_pie_chart","plot_barplot_to_png"
 )
 n_tests_running <- 0
 
@@ -66,10 +66,14 @@ checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, 
   if(!is.null(fname)){# check only searches body of function
     # read in the source file
     body <- paste(readLines(f),collapse='') 
-    # remove everything up to the start of the function
-    body <- sub(paste0("^.*",fname,"[^{]*{",collapse=''),"",body, perl=T)
-    # remove everything starting from the end of the function
-    body <- sub("}.*$", "", body, perl = T)
+    # find definition of function with opening curly bracket
+    res <- regexpr(paste0(fname,"[^{]*{",collapse=''), body, perl=T)
+    # remove everything up to and including the opening curly bracket
+    body <- substr(body, res + attr(res, 'match.length'), nchar(body) )
+    # detect end of function
+    res <- regexpr('}', body)
+    # and extract everything up to end of function
+    body <- substr(body, 0, res-1)
   }else{# check searches complete source file
     body <- readLines(f)
   }
@@ -167,9 +171,9 @@ if (inherits(res, "try-error")) {
   environment(sandbox$test.sum_vec1_and_vec2_without_plus) <- sandbox
 
   sandbox$test.plot_pie_chart <- function(){
-    checkSourceContains("pie(","used base pie function",fname="plot_pie_chart", fixed=T,negate=F)
-    checkSourceContains("main *=","assigned a title",fname="plot_pie_chart", fixed=F,negate=F) 
-    checkSourceContains("labels *=","assigned labels",fname="plot_pie_chart", fixed=F,negate=F)
+    checkSourceContains("pie(","used base pie function",fname="plot_pie_chart")
+    checkSourceContains("main *=","assigned a title",fname="plot_pie_chart", fixed=F) 
+    checkSourceContains("labels *=","assigned labels",fname="plot_pie_chart", fixed=F)
     files_before <- list.files(path=".")
     data <- c(10,15,25,30,10,10)
     labels <- LETTERS[1:6]
@@ -183,6 +187,23 @@ if (inherits(res, "try-error")) {
     checkTrue("Rplots.pdf" %in% new_files, "Plot created (inside Rplots.pdf)")
   }
   environment(sandbox$test.plot_pie_chart) <- sandbox
+
+  sandbox$test.plot_barplot_to_png <- function(){
+    checkSourceContains("barplot(","used base barplot function",fname="plot_barplot_to_png")
+    checkSourceContains("main *=","assigned a title",fname="plot_barplot_to_png", fixed=F) 
+    checkSourceContains("names.arg *=","assigned labels",fname="plot_barplot_to_png", fixed=F)
+    files_before <- list.files(path=".")
+    data <- c(10,15,25,30,10,10)
+    labels <- LETTERS[1:6]
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- plot_barplot_to_png(data, labels)
+    sink()
+    files_after <- list.files(path=".")
+    new_files <- setdiff(files_after, files_before)
+    file.remove(new_files)
+    checkTrue("test.png" %in% new_files, "Plot saved to test.png")
+  }
+  environment(sandbox$test.plot_barplot_to_png) <- sandbox
 
 
   sandbox$special_print <- function(what){
@@ -204,5 +225,5 @@ if (inherits(res, "try-error")) {
   })
   special_print("@END@")
 }
-file.remove(solution)
+#~ file.remove(solution)
 

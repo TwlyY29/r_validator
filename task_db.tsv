@@ -1,7 +1,8 @@
-competency	points	function	signature	stdparams
-vector_basics	3	create_sequence_from_10_to_20	function()	
-vector_basics	3	create_sequence_from_20_to_30	function()	
-vector_basics	3	create_sequence_from_40_to_80	function()	
-sum_basics	2	sum_4th_and_6th_position	function(vec)	vec=c(10:20)
-sum_basics	2	sum_vec1_and_vec2_without_plus	function(vec1,vec2)	vec1=c(10:20),vec2=c(20:30)
-plot_basics	4	plot_pie_chart	function(data, labels, main)	data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel"
+competency	points	function	signature	stdparams	has_gap_body
+vector_basics	3	create_sequence_from_10_to_20	function()		
+vector_basics	3	create_sequence_from_20_to_30	function()		
+vector_basics	3	create_sequence_from_40_to_80	function()		
+sum_basics	2	sum_4th_and_6th_position	function(vec)	vec=c(10:20)	
+sum_basics	2	sum_vec1_and_vec2_without_plus	function(vec1,vec2)	vec1=c(10:20),vec2=c(20:30)	
+plot_basics	4	plot_pie_chart	function(data, labels, main)	"data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main=""bla, fasel"""	
+plot_basics	4	plot_barplot_to_png	function(data, labels)	data=c(10,15,25,30,10,10), labels=LETTERS[1:6]	x

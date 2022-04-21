@@ -21,14 +21,15 @@ The following describes the system in-depth.
 ### The Task Database
 There is one central task database [task_db.tsv](task_db.tsv):
 
-| Competency | Points | Function Name | Signature | Standard Parameters  |
-| --- | --- | --- | --- | --- | --- | --- |
-| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | |
-| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | |
-| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | |
-| sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) |
-| sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) |
-| plot_basics | 4 | plot_pie_chart | function(data, labels, main) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel" |
+| Competency | Points | Function Name | Signature | Standard Parameters  | Gap Body |
+| --- | --- | --- | --- | --- | --- |
+| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | | |
+| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | | |
+| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | | |
+| sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) | |
+| sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) | |
+| plot_basics | 4 | plot_pie_chart | function(data, labels, main) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel" | |
+| plot_basics | 4 | plot_barplot_to_png | function(data, labels) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6] | x |
 
 It lists all the available tasks together with some meta information. Tasks belong to a certain competency.
 
@@ -37,6 +38,8 @@ As you can see, the functions of the `sum_basics` and `plot_basics` competency t
 ```
 sum_vec1_and_vec2_without_plus <- function(vec1=c(10:20), vec2=c(20:30)) ...
 ```
+
+The use of the bolum Gap Body is explained in more details [later](#optional_files).
 
 They have to be given in a separate column instead of the Signature-colum to allow for testing of the standard values later.
 
@@ -47,9 +50,14 @@ The description of the task is given in the specified file in your `tasks`-direc
 
 The tests and the solution of a task are given in corresponding files in your `tests` folder and one in your `solutions` folder. In both of these folders, you'll find the sub-folder `vector_basics` and the file `create_sequence_from_40_to_80.R`. 
 
-Have a look at the [file in `tests/` folder](tests/vector_basics/create_sequence_from_40_to_80.R) and the  [file in `solutions/` folder](solutions/vector_basics/create_sequence_from_40_to_80.R). The file in `solutions` contains the correct solution. Note that it does not contain the function name as this will be put together automatically later. 
+Have a look at the [file in `tests/` folder](tests/vector_basics/create_sequence_from_40_to_80.R) and the [file in `solutions/` folder](solutions/vector_basics/create_sequence_from_40_to_80.R). The file in `solutions` contains the correct solution. Note that it does not contain the function name as this will be put together automatically later. 
 
 The files in `tests`-folder contain all the unit-like tests to check the students' submissions.
+
+### Optional Files
+Sometimes, you want to provide a function body with some gaps that your students have to fill. Indicate this by checking the column Gap Body in `task_db.tsv` and create a file in the `gap_bodies`-subdirectory. As with the other files, the gap body has to live inside a subdirectory matching the competency and inside a file that matches the function name.
+
+Have a look at the [example for `plot_barplot_to_png`](gap_bodies/plot_basics/plot_barplot_to_png.R) and how this looks like in the [corresponding individual task sheet](task_1/123456/task.R). 
 
 ### Testing Tasks
 Since the main aim of this system is to test submissions for internal correctness, we need more than a syntax-check. The tests are therefore inspired by the excellent [RUnit](https://cran.r-project.org/web/packages/RUnit/index.html) Framework for R. 
@@ -91,12 +99,13 @@ A task sheet is defined by creating a table of competencies and a number of task
 | --- | --- |
 | vectors_basics | 2 |
 | sum_basics | 2 |
+| plot_basics | 2 |
 
 The competency `vectors_basics` should be tested with 2 different tasks per student. From our [task database](task_db.tsv) [above](#The-Task-Database) we know that we have 3 tasks in our database.
 
 Since we have more tasks available than required for the sheet, the tasks are **randomly sampled** for **each student individually**. That's why we need to test each student's submission with an individual test as well. 
 
-For the competency `sum_basics` all available tasks will be used.
+For the competencies `sum_basics` and `plot_basics` all available tasks will be used.
 
 Have a look at [an individual task sheet](task_1/123456/task.R). As you can see, a function call is inserted to support students in developing and exectuing their answer. Also, for functions taking parameters, this makes explicit what kind of parameters should be processed.
 

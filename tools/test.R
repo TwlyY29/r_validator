@@ -66,10 +66,14 @@ checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, 
   if(!is.null(fname)){# check only searches body of function
     # read in the source file
     body <- paste(readLines(f),collapse='') 
-    # remove everything up to the start of the function
-    body <- sub(paste0("^.*",fname,"[^{]*{",collapse=''),"",body, perl=T)
-    # remove everything starting from the end of the function
-    body <- sub("}.*$", "", body, perl = T)
+    # find definition of function with opening curly bracket
+    res <- regexpr(paste0(fname,"[^{]*{",collapse=''), body, perl=T)
+    # remove everything up to and including the opening curly bracket
+    body <- substr(body, res + attr(res, 'match.length'), nchar(body) )
+    # detect end of function
+    res <- regexpr('}', body)
+    # and extract everything up to end of function
+    body <- substr(body, 0, res-1)
   }else{# check searches complete source file
     body <- readLines(f)
   }

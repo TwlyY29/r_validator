@@ -2,7 +2,7 @@
 # DO NOT MODIFY THIS BLOCK!
 # id: 123456
 # created: 2022-04-21
-# achievable score: 17
+# achievable score: 21
 # DO NOT MODIFY THIS BLOCK! 
 ################################
 
@@ -67,6 +67,19 @@ plot_pie_chart <- function(data, labels, main){
   pie(data, labels = labels, main = main)
 }
 plot_pie_chart(data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel")
+
+# Task 7:
+# 4 Points
+# Plot a barplot. Assign labels to the plots. And give a speaking title.
+# Make sure the plot is saved to the png file
+#
+# Do NOT change the following line
+plot_barplot_to_png <- function(data, labels){
+  png("test.png", width=320, height=240)
+  barplot(data, names.arg = labels, main = "Shares from A to Z")
+  dev.off()
+}
+plot_barplot_to_png(data=c(10,15,25,30,10,10), labels=LETTERS[1:6])
 
 
 

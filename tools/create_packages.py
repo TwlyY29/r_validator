@@ -15,11 +15,21 @@ def read_task_description(fun_name, fun_competency, taskdescriptiondir):
       out += '\n# ' + line.strip()
   return out
 
+def read_gap_body(fun_name, fun_competency, base_dir, indent=2):
+  out=' '*indent
+  delim = ' '*indent
+  with open(Path(base_dir, fun_competency, fun_name+'.R').resolve(), 'r') as _f:
+    out = ' '*indent + delim.join(_f.readlines())
+  return out.rstrip()
+
 def read_task_db(taskdb):
   db = {}
   with open(taskdb) as _db:
     db = csv.DictReader(_db, delimiter="\t")
     db = list(db) # convert to list of dicts
+  for t in db:
+    if t['has_gap_body'] != '':
+      t['has_gap_body'] = True
   return db
 
 def sample_tasks_for_competencies(task_config_file, taskdb, config):
@@ -50,7 +60,11 @@ def create_task_file_for_student(identifier, indices, taskdb, solfile, config):
     fun_competency = task['competency']
     n_points += int(fun_points)
     fun_task = read_task_description(fun_name, fun_competency, config.get('R_TASKS_DESCRDIR'))
-    out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n#\n# Do NOT change the following line\n{fun_name} <- {fun_sig}{{\n  # Add your solution here\n  \n}}\n{fun_name}({fun_example_call})\n\n"
+    if task['has_gap_body']:
+      fun_body = read_gap_body(fun_name, fun_competency, config.get('R_TASKS_BODYDIR'), indent=2)
+    else:
+      fun_body = '  # Add your solution here\n  '
+    out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n#\n# Do NOT change the following line\n{fun_name} <- {fun_sig}{{\n{fun_body}\n}}\n{fun_name}({fun_example_call})\n\n"
   with open(solfile, 'w') as _sol:
     timestamp = datetime.strftime(datetime.now(),'%Y-%m-%d')
     print(f"################################\n# DO NOT MODIFY THIS BLOCK!\n# id: {identifier}\n# created: {timestamp}\n# achievable score: {n_points}\n# DO NOT MODIFY THIS BLOCK! \n################################\n\n", file=_sol)
