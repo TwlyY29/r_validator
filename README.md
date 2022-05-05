@@ -3,6 +3,8 @@ The R-Checker enables students to self-check their code and teachers to automati
 
 It can be integrated into environments like the [Virtual Programming Lab](https://github.com/jcrodriguez-dis/moodle-mod_vpl) in Moodle or the [Praktomat](https://github.com/KITPraktomatTeam/Praktomat/).
 
+A video of it being integrated into the Virtual Programming Lab [is available online: https://mms.uni-bayreuth.de/Panopto/Pages/Viewer.aspx?id=e81f6856-e3de-4149-99f5-ae8c0086e9a3](https://mms.uni-bayreuth.de/Panopto/Pages/Viewer.aspx?id=e81f6856-e3de-4149-99f5-ae8c0086e9a3).
+
 ## The Idea
 When learning a programming language like R, exercise and feedback are key to success. But feedback has to cover more than the syntax of the code. It needs to be as specific as possible covering the semantic of the code. That means feedback has to express if an answer produces the **correct result** - often this is more than just code that doesn't produce errors.
 
@@ -39,7 +41,7 @@ As you can see, the functions of the `sum_basics` and `plot_basics` competency t
 sum_vec1_and_vec2_without_plus <- function(vec1=c(10:20), vec2=c(20:30)) ...
 ```
 
-The use of the bolum Gap Body is explained in more details [later](#optional_files).
+The use of the bolum Gap Body is explained in more details [later](#optional-files).
 
 They have to be given in a separate column instead of the Signature-colum to allow for testing of the standard values later.
 
@@ -123,6 +125,8 @@ Task descriptions can contain multiple lines. The content of these files will en
 
 ## Self-Check and Corrections
 The individual test files need to be executed for an individual submission somewhere. That's what the [Virtual Programming Lab](https://github.com/jcrodriguez-dis/moodle-mod_vpl) in Moodle or the [Praktomat](https://github.com/KITPraktomatTeam/Praktomat/) can be used for. Up to now, an integration to VPL is ready. If you want to get this working with Praktomat, get in touch.
+
+Watch [a video showing how this integrates with the Virtual Programming Lab: https://mms.uni-bayreuth.de/Panopto/Pages/Viewer.aspx?id=e81f6856-e3de-4149-99f5-ae8c0086e9a3](https://mms.uni-bayreuth.de/Panopto/Pages/Viewer.aspx?id=e81f6856-e3de-4149-99f5-ae8c0086e9a3).
 
 ### Using this with Virtual Programming Lab
 For the VPL, you need to have a look at the [vpl_evaluate.sh](tools/vpl_evaluate.sh).
