@@ -1,29 +1,35 @@
-BASEDIR=${CURDIR}
+DO_TASKS:=task_1
 
-TASKS_FILE=$(BASEDIR)/task_1.tsv
-RSCRIPT_EXE=/usr/bin/Rscript
+BASEDIR:=${CURDIR}
+RSCRIPT_EXE:=/usr/bin/Rscript
 
-STUDENTS_FILE=$(BASEDIR)/students.tsv
-TOOLSDIR=$(BASEDIR)/tools
-CONFFILE=$(TOOLSDIR)/validator.config
-CONFFILE_ENV=$(addsuffix .env, $(CONFFILE))
-CONFFILE_ENVWIN=$(addsuffix .env_win, $(CONFFILE))
-TASKBASENAME=$(notdir $(TASKS_FILE))
-TASKDIR=$(TASKBASENAME:$(suffix $(TASKBASENAME))=)
+STUDENTS_FILE:=$(BASEDIR)/students.tsv
+TOOLSDIR:=$(BASEDIR)/tools
+CONFFILE:=$(TOOLSDIR)/validator.config
+CONFFILE_ENV:=$(addsuffix .env, $(CONFFILE))
+CONFFILE_ENVWIN:=$(addsuffix .env_win, $(CONFFILE))
 
-$(info creating tasks from $(TASKS_FILE) to $(TASKDIR))
+SOLUTIONS:=$(addsuffix _sol, $(DO_TASKS))
+TEST:=$(addsuffix _test, $(DO_TASKS))
 
-all: taskfiles solutionfiles tests
+$(info creating tasks $(DO_TASKS))
 
-taskfiles: $(CONFFILE)
-	python3 $(TOOLSDIR)/create_packages.py $(STUDENTS_FILE) $(TASKS_FILE) $(CONFFILE)
+all: taskfiles solutionfiles
 
-solutionfiles: taskfiles $(CONFFILE)
-	cd $(TASKDIR) && python3 $(TOOLSDIR)/make_solutions.py $(CONFFILE)
+taskfiles: $(CONFFILE) $(DO_TASKS)
 
-tests: solutionfiles $(CONFFILE)
-	cd $(TASKDIR) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)
+solutionfiles: $(CONFFILE) taskfiles $(SOLUTIONS)
 
+test: $(CONFFILE) solutionfiles $(TEST)
+
+$(DO_TASKS):
+	python3 $(TOOLSDIR)/create_packages.py $(STUDENTS_FILE) $(BASEDIR)/$@.tsv $(CONFFILE)
+
+$(SOLUTIONS):
+	cd $(@:_sol=) && python3 $(TOOLSDIR)/make_solutions.py $(CONFFILE)
+
+$(TEST):
+	cd $(@:_test=) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)
 
 ifeq ($(OS),Windows_NT)
 $(CONFFILE): $(CONFFILE_ENVWIN)
