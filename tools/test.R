@@ -61,7 +61,7 @@ checkError <- function(expr, what, silent=TRUE){
     special_print(paste0("@FAIL@",what))
   }
 }
-checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, negate=FALSE){
+checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, perl=FALSE, negate=FALSE){
   n_tests_running <<- n_tests_running+1
   if(!is.null(fname)){# check only searches body of function
     # read in the source file
@@ -77,7 +77,7 @@ checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, 
   }else{# check searches complete source file
     body <- readLines(f)
   }
-  x <- grep(expr, body, fixed=fixed)
+  x <- grep(expr, body, fixed=fixed, perl=perl)
   
   if (!identical(x, integer(0))){
     special_print(paste0(ifelse(!negate,"@OK@","@FAIL@"),what))
@@ -95,8 +95,8 @@ solution <- gsub('.R$','.exec.R',solution_raw)
 # is created during testing
 tmp <- readLines(solution_raw)
 sapply(cases_function_names, function(fun){
-  pattern = paste0(fun,'(')
-  tmp <<- gsub(pattern = pattern, replace=paste0('#',pattern), x = tmp, fixed = T)
+  pattern = paste0('^',fun,'\\(')
+  tmp <<- gsub(pattern = pattern, replace=paste0('#',fun,'('), x = tmp, fixed = F)
 })
 writeLines(tmp, solution)
 
@@ -106,7 +106,7 @@ sandbox <- new.env(parent=.GlobalEnv)
 # try to source student solution catching syntax errors
 res <- try(sys.source(solution, envir=sandbox), silent=T)
 if (inherits(res, "try-error")) {
-  special_print("@ERROR@Error while loading your solution")
+  special_print("@ERROR@Error while loading your solution. Did you run your script successfully on your computer?")
 }else{
   # add required test functions to sandbox environment
 ###ADD_SOURCES_HERE###

@@ -14,6 +14,8 @@ TEST:=$(addsuffix _test, $(DO_TASKS))
 
 $(info creating tasks $(DO_TASKS))
 
+.PHONY: $(DO_TASKS)
+
 all: taskfiles solutionfiles
 
 taskfiles: $(CONFFILE) $(DO_TASKS)

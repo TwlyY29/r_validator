@@ -1,0 +1,10 @@
+checkSourceContains("plot(","used base plot function",fname="@FNAME@")
+checkSourceContains("main *=","assigned a title",fname="@FNAME@", fixed=F) 
+checkSourceContains("col *=","used colors",fname="@FNAME@", fixed=F)
+checkSourceContains("col *=[^\\\\$]*\\\\$(Species|cyl|vs|am|gear|carb)","used an appropriate feature as colors",fname="@FNAME@", fixed=F, perl=T)
+files_before <- list.files(path=".")
+@CALL@
+files_after <- list.files(path=".")
+new_files <- setdiff(files_after, files_before)
+file.remove(new_files)
+checkTrue("Rplots.pdf" %in% new_files, "Plot created (inside Rplots.pdf)")

@@ -1,9 +1,9 @@
-n_cases <- 7
+n_cases <- 9
 test_cases <- c(
-  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus","test.plot_pie_chart","test.plot_barplot_to_png"
+  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus","test.plot_pie_chart","test.plot_barplot_to_png","test.read_data_cars","test.plot_data"
 )
 cases_function_names <- c(
-  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus","plot_pie_chart","plot_barplot_to_png"
+  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus","plot_pie_chart","plot_barplot_to_png","read_data_cars","plot_data"
 )
 n_tests_running <- 0
 
@@ -61,7 +61,7 @@ checkError <- function(expr, what, silent=TRUE){
     special_print(paste0("@FAIL@",what))
   }
 }
-checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, negate=FALSE){
+checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, perl=FALSE, negate=FALSE){
   n_tests_running <<- n_tests_running+1
   if(!is.null(fname)){# check only searches body of function
     # read in the source file
@@ -77,7 +77,7 @@ checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, 
   }else{# check searches complete source file
     body <- readLines(f)
   }
-  x <- grep(expr, body, fixed=fixed)
+  x <- grep(expr, body, fixed=fixed, perl=perl)
   
   if (!identical(x, integer(0))){
     special_print(paste0(ifelse(!negate,"@OK@","@FAIL@"),what))
@@ -95,8 +95,8 @@ solution <- gsub('.R$','.exec.R',solution_raw)
 # is created during testing
 tmp <- readLines(solution_raw)
 sapply(cases_function_names, function(fun){
-  pattern = paste0(fun,'(')
-  tmp <<- gsub(pattern = pattern, replace=paste0('#',pattern), x = tmp, fixed = T)
+  pattern = paste0('^',fun,'\\(')
+  tmp <<- gsub(pattern = pattern, replace=paste0('#',fun,'('), x = tmp, fixed = F)
 })
 writeLines(tmp, solution)
 
@@ -205,6 +205,32 @@ if (inherits(res, "try-error")) {
   }
   environment(sandbox$test.plot_barplot_to_png) <- sandbox
 
+  sandbox$test.read_data_cars <- function(){
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- read_data_cars()
+    sink()
+    checkSourceContains("read.csv(","used base read function",fname="read_data_cars")
+    checkTrue(all(c("car","mpg","cyl","disp","hp","drat","wt","qsec","vs","am","gear","carb") %in% colnames(res)), "correct column names")
+    checkEquals(ncol(res),12,"correct number of features")
+  }
+  environment(sandbox$test.read_data_cars) <- sandbox
+
+  sandbox$test.plot_data <- function(){
+    checkSourceContains("plot(","used base plot function",fname="plot_data")
+    checkSourceContains("main *=","assigned a title",fname="plot_data", fixed=F) 
+    checkSourceContains("col *=","used colors",fname="plot_data", fixed=F)
+    checkSourceContains("col *=[^\\$]*\\$(Species|cyl|vs|am|gear|carb)","used an appropriate feature as colors",fname="plot_data", fixed=F, perl=T)
+    files_before <- list.files(path=".")
+    sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
+      res <- plot_data()
+    sink()
+    files_after <- list.files(path=".")
+    new_files <- setdiff(files_after, files_before)
+    file.remove(new_files)
+    checkTrue("Rplots.pdf" %in% new_files, "Plot created (inside Rplots.pdf)")
+  }
+  environment(sandbox$test.plot_data) <- sandbox
+
 
   sandbox$special_print <- function(what){
     write(what, stdout())
@@ -225,5 +251,5 @@ if (inherits(res, "try-error")) {
   })
   special_print("@END@")
 }
-#~ file.remove(solution)
+file.remove(solution)
 

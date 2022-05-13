@@ -6,3 +6,5 @@ sum_basics	2	sum_4th_and_6th_position
 sum_basics	2	sum_vec1_and_vec2_without_plus
 plot_basics	4	plot_pie_chart
 plot_basics	4	plot_barplot_to_png
+analysis_adv_read_data	3	read_data_cars
+analysis_adv_plot	5	plot_data

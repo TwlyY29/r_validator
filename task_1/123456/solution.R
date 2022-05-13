@@ -1,8 +1,8 @@
 ################################
 # DO NOT MODIFY THIS BLOCK!
 # id: 123456
-# created: 2022-04-21
-# achievable score: 21
+# created: 2022-05-13
+# achievable score: 29
 # DO NOT MODIFY THIS BLOCK! 
 ################################
 
@@ -64,6 +64,9 @@ sum_vec1_and_vec2_without_plus(vec1=c(10:20),vec2=c(20:30))
 #
 # Do NOT change the following line
 plot_pie_chart <- function(data, labels, main){
+  data=c(10,15,25,30,10,10)
+  labels=LETTERS[1:6]
+  main="bla, fasel"
   pie(data, labels = labels, main = main)
 }
 plot_pie_chart(data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel")
@@ -80,6 +83,27 @@ plot_barplot_to_png <- function(data, labels){
   dev.off()
 }
 plot_barplot_to_png(data=c(10,15,25,30,10,10), labels=LETTERS[1:6])
+
+# Task 8:
+# 3 Points
+# Read in the dataset https://teaching.mircoschoenfeld.de/datasets/cars.csv
+#
+# Do NOT change the following line
+read_data_cars <- function(){
+  read.csv("https://teaching.mircoschoenfeld.de/datasets/cars.csv", sep=";")
+}
+read_data_cars()
+
+# Task 9:
+# 5 Points
+# Visualize the data you read in in the previous task.
+#
+# Do NOT change the following line
+plot_data <- function(){
+  data <- read_data_cars()
+  plot(data$wt, data$mpg, col=data$cyl, main="Weight and Miles per Gallon")
+}
+plot_data()
 
 
 

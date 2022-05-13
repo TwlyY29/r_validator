@@ -18,15 +18,36 @@ def create_solution_file(task_meta, task_file, sol_file, config):
     solution = ''.join(_f.readlines())
   with open(task_meta, 'r') as _tsv:
     db = csv.DictReader(_tsv, delimiter='\t')
+    sampled_functions = [t['function'] for t in db]
+  with open(task_meta, 'r') as _tsv:
+    db = csv.DictReader(_tsv, delimiter='\t')
     for task in db:
       f = task['function']
       s = Path(config.get('R_TESTS_SOLUTIONDIR'), task['competency'], f+'.R')
       if not s.exists():
         raise Exception(f"expecting solution file for function {f}: '{s}'")
       with open(s,'r') as _sol:
-        rump = ''.join(_sol.readlines())
+        rump = _sol.readlines()
       
-      solution = fill_function_in_string(solution, f, rump)
+      if any(['@IF_FUN' in line for line in rump]):
+        use_rump = []
+        fun = ''
+        open_if = 0
+        for line in rump:
+          if line.startswith('@IF_FUN '):
+            fun = line[line.index(' ')+1:len(line)-2]
+            open_if += 1
+            continue
+          elif line.startswith('@ENDIF@'):
+            open_if -= 1
+            fun = ''
+            continue
+          if open_if == 0 or (fun != '' and fun in sampled_functions):
+            use_rump.append(line)
+      
+        solution = fill_function_in_string(solution, f, ''.join(use_rump))
+      else:
+        solution = fill_function_in_string(solution, f, ''.join(rump))
       
   with open(sol_file, 'w') as _out:
     print(solution, file=_out)

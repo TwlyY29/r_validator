@@ -30,6 +30,8 @@ def read_task_db(taskdb):
   for t in db:
     if t['has_gap_body'] != '':
       t['has_gap_body'] = True
+    if t['depends'] == '':
+      t['depends'] = False
   return db
 
 def sample_tasks_for_competencies(task_config_file, taskdb, config):
@@ -48,7 +50,18 @@ def sample_tasks_for_competencies(task_config_file, taskdb, config):
         indices.append(next((index for (index, d) in enumerate(taskdb) if d["function"] == tasks[idx]['function']), None))
   return indices
 
+def check_dependencies(indices, taskdb):
+  sampled_competencies = [taskdb[i]['competency'] for i in indices]
+  for idx,i in enumerate(indices):
+    task = taskdb[i]
+    if task['depends'] != False:
+      dep = task['depends']
+      if not dep in sampled_competencies:
+        raise Exception(f"dependency of function '{task['function']}' on competency '{dep}' is not met")
+  return True
+
 def create_task_file_for_student(identifier, indices, taskdb, solfile, config):
+  check_dependencies(indices, taskdb)
   out = ''
   n_points = 0
   for idx,i in enumerate(indices):
@@ -174,7 +187,6 @@ def init_config(config_file):
 def main(students, tasks, config='validator.config'):
   config = init_config(config)
   config['outdir'] = str(Path(os.getcwd(), Path(tasks).stem).resolve())
-  
   taskdb = read_task_db(config.get('TASK_DB'))
   with open(students, 'r') as _tsv:
     db = csv.DictReader(_tsv, delimiter='\t')
