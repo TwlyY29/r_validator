@@ -3,7 +3,7 @@
 cat << EOF > vpl_execution
 #!/bin/bash
 
-id=\$(head -n 4 ${VPL_SUBFILE0} | grep '# id: ' | cut -d' ' -f3)
+id=\$(head -n 4 "${VPL_SUBFILE0}" | grep '# id: ' | cut -d' ' -f3)
 
 [[ "\$id" =~ ^[0-9]{6}$ ]] || { echo -e "Comment :=>> Invalid ID in your source file!\nGrade :=>> 0" && exit 1 ; }
 
@@ -15,7 +15,7 @@ ptscorrect=0
 while IFS= read -r line;
 do
   if [[ "\$line" =~ ^@ERROR@ ]]; then
-      echo "Comment :=>> Could not load source file!"
+      echo "Comment :=>> Could not load source file! Often this is an issue with unmatching opened and closed brackets. Did you run your solution successfully on your computer?"
       exit 1
     elif [[ "\$line" =~ ^@START@ ]]; then
       fun=\$(echo \$line | cut -d'@' -f3)
@@ -39,7 +39,7 @@ do
       #~ echo "Grade :=>> \$grade"
       echo "Grade :=>> \$ptscorrect"
     fi
-done < <( Rscript testme.R ${VPL_SUBFILE0} )
+done < <( Rscript testme.R "${VPL_SUBFILE0}" )
 
 EOF
 chmod +x vpl_execution
