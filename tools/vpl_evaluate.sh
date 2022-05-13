@@ -4,6 +4,7 @@ cat << EOF > vpl_execution
 #!/bin/bash
 
 id=\$(head -n 4 "${VPL_SUBFILE0}" | grep '# id: ' | cut -d' ' -f3)
+id=\${id//[\$'\t\r\n']} # remove leading and trailing newlines/tabs from id
 
 [[ "\$id" =~ ^[0-9]{6}$ ]] || { echo -e "Comment :=>> Invalid ID in your source file!\nGrade :=>> 0" && exit 1 ; }
 
