@@ -1,4 +1,8 @@
-DO_TASKS:=task_1
+ifndef TASK
+$(error TASK is not set)
+else
+	DO_TASKS:=$(TASK)
+endif
 
 BASEDIR:=${CURDIR}
 RSCRIPT_EXE:=/usr/bin/Rscript
@@ -25,10 +29,10 @@ solutionfiles: $(CONFFILE) taskfiles $(SOLUTIONS)
 test: $(CONFFILE) solutionfiles $(TEST)
 
 $(DO_TASKS):
-	python3 $(TOOLSDIR)/create_packages.py $(STUDENTS_FILE) $(BASEDIR)/$@.tsv $(CONFFILE)
+	python3 $(TOOLSDIR)/taskfiles.py $(STUDENTS_FILE) $(BASEDIR)/$@.tsv $(CONFFILE)
 
 $(SOLUTIONS):
-	cd $(@:_sol=) && python3 $(TOOLSDIR)/make_solutions.py $(CONFFILE)
+	cd $(@:_sol=) && python3 $(TOOLSDIR)/solutionfiles.py $(CONFFILE)
 
 $(TEST):
 	cd $(@:_test=) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)

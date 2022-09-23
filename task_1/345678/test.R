@@ -106,7 +106,7 @@ sandbox <- new.env(parent=.GlobalEnv)
 # try to source student solution catching syntax errors
 res <- try(sys.source(solution, envir=sandbox), silent=T)
 if (inherits(res, "try-error")) {
-  special_print("@ERROR@Error while loading your solution")
+  special_print("@ERROR@Error while loading your solution. Did you run your script successfully on your computer?")
 }else{
   # add required test functions to sandbox environment
   sandbox$test.create_sequence_from_10_to_20 <- function(){

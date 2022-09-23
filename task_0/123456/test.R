@@ -1,16 +1,18 @@
-n_cases <- ###NUM_TESTCASES###
-test_cases <- c(
-  "###ADD_TEST_FUNCTIONS_HERE###"
-)
-cases_function_names <- c(
-  "###ADD_R_FUNCTIONS_HERE###"
-)
 n_tests_running <- 0
 
 special_print <- function(what){
   write(what, stdout())
 }
 
+checkVariableExists <- function(var_name, what){
+  n_tests_running <<- n_tests_running+1
+  result <- exists(var_name, envir=sandbox)
+  if(identical(result, TRUE)){
+    special_print(paste0("@OK@",what))
+  }else{
+    special_print(paste0("@FAIL@",what))
+  }
+}
 checkEquals <- function(obj1, obj2, what, tolerance = .Machine$double.eps^0.5, checkNames=TRUE){
   n_tests_running <<- n_tests_running+1
   if (!identical(TRUE, checkNames)) {
@@ -86,19 +88,7 @@ checkSourceContains <- function(expr, what, fname=NULL, f=solution, fixed=TRUE, 
   }
 }
 # expect solution file as command line argument
-solution_raw <- commandArgs(trailingOnly=TRUE)[1]
-solution <- gsub('.R$','.exec.R',solution_raw)
-
-# we have added dummy execution of functions to help students test their functions
-# when sourcing the solution, these functions mustn't be executed because they
-# might produce Rplots.pdf - so we have no possibility to make sure that file
-# is created during testing
-tmp <- readLines(solution_raw)
-sapply(cases_function_names, function(fun){
-  pattern = paste0('^',fun,'\\(')
-  tmp <<- gsub(pattern = pattern, replace=paste0('#',fun,'('), x = tmp, fixed = F)
-})
-writeLines(tmp, solution)
+solution <- commandArgs(trailingOnly=TRUE)[1]
 
 # set up a sandboxed environment
 sandbox <- new.env(parent=.GlobalEnv)
@@ -109,24 +99,31 @@ if (inherits(res, "try-error")) {
   special_print("@ERROR@Error while loading your solution. Did you run your script successfully on your computer?")
 }else{
   # add required test functions to sandbox environment
-###ADD_SOURCES_HERE###
+
   sandbox$special_print <- function(what){
     write(what, stdout())
   }
   environment(sandbox$special_print) <- sandbox
   
-  void <- sapply(1:n_cases, function(i){
-    n_tests_running <<- 0
-    special_print(paste0("@START@",cases_function_names[i]))
+  
+  n_tests_running <<- 0
+  sandbox$test_solution <- function(){
+    checkSourceContains("c(","used base c function")
+    checkVariableExists("result", "variable 'result' exists")
+    checkEqualsNumeric(length(result), 12, "length of vector")
+    checkEqualsNumeric(result, c(10,12,14,16,18,23,20,17,14,11,8,5), "combined vector")
+
+  }
+  environment(sandbox$test_solution) <- sandbox
+  special_print("@START@test_solution")
     
-    # get test function and move it to sandbox environment
-    func <- get(test_cases[i], envir=sandbox)
+  # get test function and move it to sandbox environment
+  func <- get("test_solution", envir=sandbox)
+  
+  # execute function omitting all the output from the student's script
+  res <- try(func())
     
-    # execute function omitting all the output from the student's script
-    res <- try(func())
-    
-    special_print(paste0("@NTESTS@",n_tests_running))
-  })
+  special_print(paste0("@NTESTS@",n_tests_running))
   special_print("@END@")
 }
-file.remove(solution)
+

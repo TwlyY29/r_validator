@@ -20,23 +20,25 @@ To be able to put this together, you need a database of tasks, task descriptions
 
 The following describes the system in-depth.
 
+## For advanced students
+
+This Readme starts with an introduction how to set-up a system for rather advanced students. [Below](#for-students-who-get-in-touch-with-r-for-the-first-time) you can find an introduction if you have students who get in touch with R for the first time. 
+
 ### The Task Database
-There is one central task database [task_db.tsv](task_db.tsv):
+For advanced students, the central task database [task_db.tsv](task_db.tsv) looks like this:
 
-| Competency | Points | Function Name | Signature | Standard Parameters  | Gap Body | Dependency |
-| --- | --- | --- | --- | --- | --- | --- |
-| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | | | |
-| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | | | |
-| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | | | |
-| sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) | | |
-| sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) | | |
-| plot_basics | 4 | plot_pie_chart | function(data, labels, main) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel" | | |
-| plot_basics | 4 | plot_barplot_to_png | function(data, labels) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6] | x | |
-| analysis_adv_read_data | 3 | read_data_iris | function() |  |  |  |
-| analysis_adv_read_data | 3 | read_data_cars | function() |  |  |  |
-| analysis_adv_plot | 5 | plot_data | function() |  |  | analysis_adv_read_data |
-
-
+| Competency | Points | Function Name | Signature | Standard Parameters  | Gap Body | Dependency | No Surrounding Function Needed |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| vectors_basics | 3 | create_sequence_from_10_to_20 | function() | | | | |
+| vectors_basics | 3 | create_sequence_from_20_to_30 | function() | | | | |
+| vectors_basics | 3 | create_sequence_from_40_to_80 | function() | | | | |
+| sum_basics | 3 | sum_4th_and_6th_position | function(vec) | vec=c(10:20) | | | |
+| sum_basics | 3 | sum_vec1_and_vec2_without_plus | function(vec1,vec2) | vec1=c(10:20), vec2=c(20:30) | | | |
+| plot_basics | 4 | plot_pie_chart | function(data, labels, main) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6], main="bla, fasel" | | | |
+| plot_basics | 4 | plot_barplot_to_png | function(data, labels) | data=c(10,15,25,30,10,10), labels=LETTERS[1:6] | x | | |
+| analysis_adv_read_data | 3 | read_data_iris | function() |  |  |  | |
+| analysis_adv_read_data | 3 | read_data_cars | function() |  |  |  | |
+| analysis_adv_plot | 5 | plot_data | function() |  |  | analysis_adv_read_data | |
 
 It lists all the available tasks together with some meta information. Tasks belong to a certain competency.
 
@@ -150,6 +152,21 @@ The rest of the [vpl_evaluate.sh](tools/vpl_evaluate.sh) converts the output of 
 
 By the way, the way the student's functions are called prohibit messing with this system. Have a look at the [test_safe_call.R](tools/test_safe_call.R) to see that all output of the student's function is redirected to `/dev/null`.
 
+## For students who get in touch with R for the first time
+This is considered a special case for the system. It has a substantial difference to the above-mentioned descriptions: It doesn't require the students to enter their solutions *inside of functions* but rather just on the top level of their R-Scripts.
+
+We still have the central task database [task_db.tsv](task_db.tsv):
+
+| Competency | Points | Function Name | Signature | Standard Parameters  | Gap Body | Dependency | No Surrounding Function Needed |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| first_steps | 3 | create_and_append_1 | NA | | | | x |
+| first_steps | 3 | create_and_append_2 | NA | | | | x |
+
+Just now, the last column is non-empty. Of course, you can combine functions that do not require surrounding functions in the central task database file with those that do. Beware, though, that they mustn't be combined in a single task sheet!
+
+Everything else is still the same. So, you need a [task sheet](task_0.tsv) to define the task, which then yields in an [individual task sheet](task_0/123456/task.R) and an [individual test sheet](task_0/123456/test.R). An expected solution could look [like this](task_0/123456/solution.R).
+
+Note that you have an additional check avilable ([see here for an example](tests/first_steps/create_and_append_1.R)): `checkVariableExists` checks if the student created a variable with a certain name that holds a calculated result, for example. If you combine multiple tasks in one sheet, you have to take care for yourself that variable names differ between tasks!
 
 ## Usage
 To get started, you'll need three things:
@@ -161,27 +178,29 @@ To get started, you'll need three things:
 Then it is all about calling
 
 ```
-make
+TASK=task_1 make
 ```
 
 which will end up in a folder with the same name as your task sheet (here, it is `task_1` because we have `task_1.tsv`). Inside, you'll find folders for all the students together with their individual task sheets, their test files, and their solutions.
 
+The `TASK` variable can be exported to your environment so that you do not have to type it in every time. In any case, it configures which task sheet will be built.
+
 If you want to deliver the task sheets from a website, it is advised to skip creation of solutions until you synced the directory to your webserver. So you'd rather do
 
 ```
-make taskfiles
+TASK=task_1 make taskfiles
 ```
 
 sync the `task_1` folder with your webserver and then
 
 ```
-make solutionfiles
+TASK=task_1 make solutionfiles
 ```
 
 While developing tasks and tests you can use 
 
 ```
-make tests
+TASK=task_1 make tests
 ```
 
 Be aware that this creates solution files!

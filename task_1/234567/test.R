@@ -1,9 +1,9 @@
 n_cases <- 9
 test_cases <- c(
-  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus","test.plot_pie_chart","test.plot_barplot_to_png","test.read_data_cars","test.plot_data"
+  "test.create_sequence_from_10_to_20","test.create_sequence_from_20_to_30","test.create_sequence_from_40_to_80","test.sum_4th_and_6th_position","test.sum_vec1_and_vec2_without_plus","test.plot_pie_chart","test.plot_barplot_to_png","test.read_data_iris","test.plot_data"
 )
 cases_function_names <- c(
-  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus","plot_pie_chart","plot_barplot_to_png","read_data_cars","plot_data"
+  "create_sequence_from_10_to_20","create_sequence_from_20_to_30","create_sequence_from_40_to_80","sum_4th_and_6th_position","sum_vec1_and_vec2_without_plus","plot_pie_chart","plot_barplot_to_png","read_data_iris","plot_data"
 )
 n_tests_running <- 0
 
@@ -106,7 +106,7 @@ sandbox <- new.env(parent=.GlobalEnv)
 # try to source student solution catching syntax errors
 res <- try(sys.source(solution, envir=sandbox), silent=T)
 if (inherits(res, "try-error")) {
-  special_print("@ERROR@Error while loading your solution")
+  special_print("@ERROR@Error while loading your solution. Did you run your script successfully on your computer?")
 }else{
   # add required test functions to sandbox environment
   sandbox$test.create_sequence_from_10_to_20 <- function(){
@@ -205,15 +205,15 @@ if (inherits(res, "try-error")) {
   }
   environment(sandbox$test.plot_barplot_to_png) <- sandbox
 
-  sandbox$test.read_data_cars <- function(){
+  sandbox$test.read_data_iris <- function(){
     sink(file=ifelse(.Platform$OS.type == "unix", "/dev/null", "nul"))
-      res <- read_data_cars()
+      res <- read_data_iris()
     sink()
-    checkSourceContains("read.csv(","used base read function",fname="read_data_cars")
-    checkTrue(all(c("car","mpg","cyl","disp","hp","drat","wt","qsec","vs","am","gear","carb") %in% colnames(res)), "correct column names")
-    checkEquals(ncol(res),12,"correct number of features")
+    checkSourceContains("read.csv(","used base read function",fname="read_data_iris")
+    checkTrue(all(c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width","Species") %in% colnames(res)), "correct column names")
+    checkTrue(is.factor(res$Species), "strings are factors")
   }
-  environment(sandbox$test.read_data_cars) <- sandbox
+  environment(sandbox$test.read_data_iris) <- sandbox
 
   sandbox$test.plot_data <- function(){
     checkSourceContains("plot(","used base plot function",fname="plot_data")
