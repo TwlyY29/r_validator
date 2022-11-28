@@ -20,6 +20,12 @@ else
 	BASEDIR_TASKDB:=$(BASEDIR)
 endif
 
+ifdef USE_TASKDESCRDIR
+	BASEDIR_TASKDESCR:=$(USE_TASKDESCRDIR)
+else
+	BASEDIR_TASKDESCR:=$(BASEDIR)
+endif
+
 ifdef USE_STUDENTS_DB
 	STUDENTS_DB:=$(USE_STUDENTS_DB)
 else
@@ -36,7 +42,7 @@ RSCRIPT_EXE:=/usr/bin/Rscript
 SOLUTIONS:=$(addsuffix _sol, $(DO_TASKS))
 TEST:=$(addsuffix _test, $(DO_TASKS))
 
-$(info creating tasks $(DO_TASKS))
+$(info creating tasks $(BASEDIR_TASKDESCR)/$(DO_TASKS))
 
 .PHONY: $(DO_TASKS)
 .INTERMEDIATE: $(STUDENTS_FILE)
@@ -50,7 +56,7 @@ solutionfiles: $(CONFFILE) taskfiles $(SOLUTIONS)
 test: $(CONFFILE) solutionfiles $(TEST)
 
 $(DO_TASKS): $(STUDENTS_FILE)
-	python3 $(TOOLSDIR)/taskfiles.py $(STUDENTS_FILE) $(BASEDIR)/$@.tsv $(CONFFILE)
+	python3 $(TOOLSDIR)/taskfiles.py $(STUDENTS_FILE) $(BASEDIR_TASKDESCR)/$@.tsv $(CONFFILE)
 
 $(SOLUTIONS):
 	cd $(@:_sol=) && python3 $(TOOLSDIR)/solutionfiles.py $(CONFFILE)
