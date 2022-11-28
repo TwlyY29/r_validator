@@ -31,9 +31,8 @@ class Taskfiles_No_Functions:
       if task['has_gap_body']:
         fun_body = read_gap_body(fun_name, fun_competency, self.config.get('R_TASKS_BODYDIR'), indent=0)
       else:
-        fun_body = '  # Add your solution here\n  '
-        
-      out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n\n\n\n# End of Task {idx+1}\n\n"
+        fun_body = '\n  '
+      out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n{fun_body}\n\n\n# End of Task {idx+1}\n\n"
     write_student_solution_base_file(self.sol_file, self.student, out, n_points)
 
   def load_tests_file(self, taskdb_entry, indent=2):

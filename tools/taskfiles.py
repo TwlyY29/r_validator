@@ -36,7 +36,7 @@ def sample_tasks_for_competencies(task_config_file, taskdb, config):
       elif k==l:
         w = range(l)
       for idx in w:
-        indices.append(next((index for (index, d) in enumerate(taskdb) if d["function"] == tasks[idx]['function']), None))
+        indices.append(next((index for (index, d) in enumerate(taskdb) if d["function"] == tasks[idx]['function'] and d['competency'] == tasks[idx]['competency']), None))
   return indices
 
 def main(students, tasks, config='validator.config'):
