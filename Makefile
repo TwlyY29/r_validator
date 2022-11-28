@@ -64,9 +64,9 @@ $(SOLUTIONS):
 $(TEST):
 	cd $(@:_test=) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)
 
-ifdef $(DO_STUDENT)
+ifndef $(DO_STUDENT)
 $(STUDENTS_FILE):
-	$(STUDENTS_DB) $@
+	cp $(STUDENTS_DB) $@
 else
 $(STUDENTS_FILE):
 	$(shell head -n1 $(STUDENTS_DB) > $@ && grep "$(DO_STUDENT)" $(STUDENTS_DB) >> $@ )
