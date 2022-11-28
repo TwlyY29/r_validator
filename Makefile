@@ -6,6 +6,8 @@ endif
 
 ifdef STUDENT
 	DO_STUDENT:=$(STUDENT)
+else
+	DO_STUDENT:=
 endif
 
 ifdef USE_BASEDIR
@@ -43,6 +45,9 @@ SOLUTIONS:=$(addsuffix _sol, $(DO_TASKS))
 TEST:=$(addsuffix _test, $(DO_TASKS))
 
 $(info creating tasks $(BASEDIR_TASKDESCR)/$(DO_TASKS))
+ifdef DO_STUDENT
+$(info ...for $(STUDENT))
+endif
 
 .PHONY: $(DO_TASKS)
 .INTERMEDIATE: $(STUDENTS_FILE)
@@ -64,7 +69,7 @@ $(SOLUTIONS):
 $(TEST):
 	cd $(@:_test=) && python3 $(TOOLSDIR)/run_tests.py $(CONFFILE)
 
-ifndef $(DO_STUDENT)
+ifeq ($(DO_STUDENT),)
 $(STUDENTS_FILE):
 	cp $(STUDENTS_DB) $@
 else
