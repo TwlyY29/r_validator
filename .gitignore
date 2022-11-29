@@ -4,5 +4,6 @@
 *.RData
 *.Ruserdata
 *.conf
+*.config
 __pycache__/
 *.py[cod]
