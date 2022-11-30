@@ -40,8 +40,10 @@ def sample_tasks_for_competencies(task_config_file, taskdb, config):
   return indices
 
 def main(students, tasks, config='validator.config'):
+  _tid = Path(tasks).stem
   config = init_config(config)
-  config['outdir'] = str(Path(os.getcwd(), Path(tasks).stem).resolve())
+  config['outdir'] = str(Path(os.getcwd(), _tid).resolve())
+  config['taskid'] = _tid
   taskdb = read_task_db(config.get('TASK_DB'))
   with open(students, 'r') as _tsv:
     db = csv.DictReader(_tsv, delimiter='\t')

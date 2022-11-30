@@ -33,7 +33,7 @@ class Taskfiles_No_Functions:
       else:
         fun_body = '\n  '
       out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n{fun_body}\n\n\n# End of Task {idx+1}\n\n"
-    write_student_solution_base_file(self.sol_file, self.student, out, n_points)
+    write_student_solution_base_file(self.sol_file, self.student, self.config['taskid'], out, n_points)
 
   def load_tests_file(self, taskdb_entry, indent=2):
     fun_file = Path(taskdb_entry['competency'], taskdb_entry['function']+'.R')

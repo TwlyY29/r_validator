@@ -45,7 +45,7 @@ class Taskfiles_With_Functions:
       else:
         fun_body = '  # Add your solution here\n  '
       out += f"# Task {idx+1}:\n# {fun_points} Points{fun_task}\n#\n# Do NOT change the following line\n{fun_name} <- {fun_sig}{{\n{fun_body}\n}}\n{fun_name}({fun_example_call})\n\n"
-    write_student_solution_base_file(self.sol_file, self.student, out, n_points)
+    write_student_solution_base_file(self.sol_file, self.student, self.config['taskid'], out, n_points)
 
   def split_std_params(self, params):
     if ',' in params:
